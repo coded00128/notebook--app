@@ -1,0 +1,14 @@
+[project]
+name = "my-notebook"
+version = "1.0.0"
+description = "My Notebook app"
+requires-python = ">=3.10"
+dependencies = [
+    "flet",
+    "flet-android-notifications"
+]
+
+[tool.flet]
+product = "My Notebook"
+org = "com.mynotebook"
+build_number = 1
