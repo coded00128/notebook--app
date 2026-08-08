@@ -1,8 +1,7 @@
-import flet as ft
+      import flet as ft
 import json
 import os
 from datetime import datetime, timedelta
-
 from flet_android_notifications import FletAndroidNotifications
 
 
@@ -10,7 +9,8 @@ def main(page: ft.Page):
     page.title = "My Notebook"
     page.padding = 0
     page.spacing = 0
-    page.bgcolor = "#F7F7FB"
+    page.bgcolor = "#F5F8FF"
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     data_file = "notebook_data.json"
 
@@ -20,17 +20,19 @@ def main(page: ft.Page):
 
     notifications = FletAndroidNotifications()
 
-    RED = "#E63946"
-    RED_DARK = "#C92F3B"
-    RED_LIGHT = "#FFF0F1"
-    PINK_LIGHT = "#FFE8EA"
+    BLUE = "#2563EB"
+    BLUE_DARK = "#1D4ED8"
+    BLUE_LIGHT = "#EAF1FF"
+    BLUE_SOFT = "#F3F6FF"
     WHITE = "#FFFFFF"
-    BACKGROUND = "#F7F7FB"
-    TEXT = "#202124"
-    GREY = "#777777"
-    LIGHT_GREY = "#E8E8EF"
-    BLUE_LIGHT = "#F0F3FF"
-    YELLOW_LIGHT = "#FFF7E8"
+    BACKGROUND = "#F5F8FF"
+    TEXT = "#172033"
+    GREY = "#657083"
+    LIGHT_GREY = "#DCE3F0"
+    GREEN = "#16A34A"
+    RED = "#DC2626"
+    RED_LIGHT = "#FEECEC"
+    YELLOW_LIGHT = "#FFF8E7"
 
     content = ft.Column(
         expand=True,
@@ -51,37 +53,38 @@ def main(page: ft.Page):
             tasks = data.get("tasks", [])
             notes = data.get("notes", [])
             user_name = data.get("user_name", "")
-
         except Exception:
             tasks = []
             notes = []
             user_name = ""
 
     def save_data():
-        data = {
-            "user_name": user_name,
-            "tasks": tasks,
-            "notes": notes
-        }
-
         try:
             with open(data_file, "w", encoding="utf-8") as file:
-                json.dump(data, file, indent=4)
+                json.dump(
+                    {
+                        "user_name": user_name,
+                        "tasks": tasks,
+                        "notes": notes
+                    },
+                    file,
+                    indent=4
+                )
         except Exception as error:
-            print("Could not save data:", error)
+            print("Save error:", error)
 
     def get_time():
         return datetime.now().strftime("%d %b %Y, %I:%M %p")
 
     def show_message(message):
-        try:
-            page.show_dialog(
-                ft.SnackBar(
-                    content=ft.Text(message)
+        page.show_dialog(
+            ft.SnackBar(
+                content=ft.Text(
+                    message,
+                    weight=ft.FontWeight.W_600
                 )
             )
-        except Exception:
-            print(message)
+        )
 
     def section_title(title, subtitle=None):
         controls = [
@@ -98,6 +101,7 @@ def main(page: ft.Page):
                 ft.Text(
                     subtitle,
                     size=13,
+                    weight=ft.FontWeight.W_500,
                     color=GREY
                 )
             )
@@ -113,7 +117,7 @@ def main(page: ft.Page):
             padding=padding,
             margin=ft.Margin(bottom=10),
             bgcolor=color,
-            border_radius=18,
+            border_radius=20,
             border=ft.Border.all(1, LIGHT_GREY),
             width=float("inf")
         )
@@ -123,7 +127,7 @@ def main(page: ft.Page):
             label="Your name",
             hint_text="Enter your name",
             autofocus=True,
-            border_radius=14
+            border_radius=15
         )
 
         def save_name(e):
@@ -140,7 +144,6 @@ def main(page: ft.Page):
 
             dialog.open = False
             page.update()
-
             show_home()
 
         dialog = ft.AlertDialog(
@@ -151,7 +154,10 @@ def main(page: ft.Page):
             ),
             content=ft.Column(
                 controls=[
-                    ft.Text("Let's personalize your notebook."),
+                    ft.Text(
+                        "Let's personalize your notebook.",
+                        weight=ft.FontWeight.W_500
+                    ),
                     name_box
                 ],
                 tight=True,
@@ -159,8 +165,11 @@ def main(page: ft.Page):
             ),
             actions=[
                 ft.Button(
-                    content=ft.Text("Continue"),
-                    bgcolor=RED,
+                    content=ft.Text(
+                        "Continue",
+                        weight=ft.FontWeight.BOLD
+                    ),
+                    bgcolor=BLUE,
                     color=WHITE,
                     on_click=save_name
                 )
@@ -178,24 +187,29 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     ft.Container(
-                        content=ft.Text("📓", size=30),
+                        content=ft.Icon(
+                            ft.Icons.MENU_BOOK_ROUNDED,
+                            color=BLUE,
+                            size=31
+                        ),
                         width=58,
                         height=58,
                         alignment=ft.Alignment.CENTER,
-                        bgcolor=PINK_LIGHT,
+                        bgcolor=BLUE_LIGHT,
                         border_radius=18
                     ),
                     ft.Column(
                         controls=[
                             ft.Text(
                                 f"Hello, {greeting} 👋",
-                                size=22,
+                                size=21,
                                 weight=ft.FontWeight.BOLD,
                                 color=TEXT
                             ),
                             ft.Text(
                                 "Ready to get things done?",
                                 size=13,
+                                weight=ft.FontWeight.W_500,
                                 color=GREY
                             )
                         ],
@@ -224,37 +238,14 @@ def main(page: ft.Page):
                 controls=[
                     ft.Text(
                         str(len(tasks)),
-                        size=29,
+                        size=30,
                         weight=ft.FontWeight.BOLD,
-                        color=RED
+                        color=BLUE
                     ),
                     ft.Text(
                         "Tasks",
                         size=13,
-                        color=GREY
-                    )
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=2
-            ),
-            expand=True,
-            padding=18,
-            bgcolor=RED_LIGHT,
-            border_radius=18
-        )
-
-        note_stat = ft.Container(
-            content=ft.Column(
-                controls=[
-                    ft.Text(
-                        str(len(notes)),
-                        size=29,
-                        weight=ft.FontWeight.BOLD,
-                        color="#5969D9"
-                    ),
-                    ft.Text(
-                        "Notes",
-                        size=13,
+                        weight=ft.FontWeight.W_600,
                         color=GREY
                     )
                 ],
@@ -264,7 +255,32 @@ def main(page: ft.Page):
             expand=True,
             padding=18,
             bgcolor=BLUE_LIGHT,
-            border_radius=18
+            border_radius=20
+        )
+
+        note_stat = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Text(
+                        str(len(notes)),
+                        size=30,
+                        weight=ft.FontWeight.BOLD,
+                        color=BLUE_DARK
+                    ),
+                    ft.Text(
+                        "Notes",
+                        size=13,
+                        weight=ft.FontWeight.W_600,
+                        color=GREY
+                    )
+                ],
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=2
+            ),
+            expand=True,
+            padding=18,
+            bgcolor=BLUE_SOFT,
+            border_radius=20
         )
 
         content.controls.append(
@@ -294,22 +310,28 @@ def main(page: ft.Page):
                             controls=[
                                 ft.Container(
                                     content=ft.Button(
-                                        content=ft.Text("➕  Task"),
+                                        content=ft.Text(
+                                            "＋  Task",
+                                            weight=ft.FontWeight.BOLD
+                                        ),
                                         expand=True,
-                                        bgcolor=RED,
+                                        bgcolor=BLUE,
                                         color=WHITE,
-                                        height=48,
+                                        height=50,
                                         on_click=show_create_task
                                     ),
                                     expand=True
                                 ),
                                 ft.Container(
                                     content=ft.Button(
-                                        content=ft.Text("📝  Note"),
+                                        content=ft.Text(
+                                            "📝  Note",
+                                            weight=ft.FontWeight.BOLD
+                                        ),
                                         expand=True,
                                         bgcolor=WHITE,
-                                        color=TEXT,
-                                        height=48,
+                                        color=BLUE,
+                                        height=50,
                                         on_click=show_create_note
                                     ),
                                     expand=True
@@ -342,19 +364,20 @@ def main(page: ft.Page):
                         controls=[
                             ft.Container(
                                 content=ft.Icon(
-                                    ft.Icons.CHECK,
+                                    ft.Icons.CHECK_ROUNDED,
                                     color=WHITE,
                                     size=17
                                 ),
-                                width=32,
-                                height=32,
+                                width=34,
+                                height=34,
                                 alignment=ft.Alignment.CENTER,
-                                bgcolor=RED,
-                                border_radius=10
+                                bgcolor=BLUE,
+                                border_radius=11
                             ),
                             ft.Text(
                                 task.get("text", ""),
                                 size=15,
+                                weight=ft.FontWeight.W_500,
                                 expand=True,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS
@@ -372,16 +395,21 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.Container(
-                                content=ft.Text("📝", size=17),
-                                width=32,
-                                height=32,
+                                content=ft.Icon(
+                                    ft.Icons.EDIT_NOTE_ROUNDED,
+                                    color=BLUE,
+                                    size=20
+                                ),
+                                width=34,
+                                height=34,
                                 alignment=ft.Alignment.CENTER,
                                 bgcolor=BLUE_LIGHT,
-                                border_radius=10
+                                border_radius=11
                             ),
                             ft.Text(
                                 note.get("text", ""),
                                 size=15,
+                                weight=ft.FontWeight.W_500,
                                 expand=True,
                                 max_lines=2,
                                 overflow=ft.TextOverflow.ELLIPSIS
@@ -399,7 +427,8 @@ def main(page: ft.Page):
             recent_controls.append(
                 ft.Text(
                     "Nothing here yet. Start writing!",
-                    color=GREY
+                    color=GREY,
+                    weight=ft.FontWeight.W_500
                 )
             )
 
@@ -415,6 +444,15 @@ def main(page: ft.Page):
 
         page.update()
 
+    def parse_picker_date(value):
+        if value is None:
+            return None
+
+        if hasattr(value, "year") and hasattr(value, "month") and hasattr(value, "day"):
+            return value.year, value.month, value.day
+
+        return None
+
     def choose_reminder(task, after_save=None):
         current_reminder = task.get("reminder")
         selected_datetime = None
@@ -427,38 +465,66 @@ def main(page: ft.Page):
             except Exception:
                 selected_datetime = None
 
+        current_text = ft.Text(
+            (
+                selected_datetime.strftime(
+                    "%d %b %Y • %I:%M %p"
+                )
+                if selected_datetime
+                else "No reminder selected"
+            ),
+            size=14,
+            weight=ft.FontWeight.W_600,
+            color=GREY
+        )
+
+        def refresh_text():
+            current_text.value = (
+                selected_datetime.strftime(
+                    "%d %b %Y • %I:%M %p"
+                )
+                if selected_datetime
+                else "No reminder selected"
+            )
+            page.update()
+
         def open_date_picker(e):
-            today = datetime.now()
+            nonlocal selected_datetime
+
+            today = datetime.now().date()
 
             def date_changed(ev):
                 nonlocal selected_datetime
 
-                value = date_picker.value
+                value = ev.control.value
+                parsed = parse_picker_date(value)
 
-                if value:
-                    if isinstance(value, datetime):
-                        selected_date = value.date()
-                    else:
-                        selected_date = value
+                if parsed:
+                    year, month, day = parsed
 
                     if selected_datetime:
-                        selected_time = selected_datetime.time()
+                        hour = selected_datetime.hour
+                        minute = selected_datetime.minute
                     else:
-                        selected_time = datetime.now().time()
+                        hour = datetime.now().hour
+                        minute = datetime.now().minute
 
                     selected_datetime = datetime(
-                        selected_date.year,
-                        selected_date.month,
-                        selected_date.day,
-                        selected_time.hour,
-                        selected_time.minute
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
                     )
 
                     refresh_text()
 
-            date_picker = ft.DatePicker(
-                current_date=today,
-                first_date=today,
+            picker = ft.DatePicker(
+                first_date=datetime(
+                    today.year,
+                    today.month,
+                    today.day
+                ),
                 last_date=datetime(
                     today.year + 5,
                     12,
@@ -467,36 +533,37 @@ def main(page: ft.Page):
                 on_change=date_changed
             )
 
-            page.show_dialog(date_picker)
+            page.show_dialog(picker)
 
         def open_time_picker(e):
+            nonlocal selected_datetime
+
             def time_changed(ev):
                 nonlocal selected_datetime
 
-                value = time_picker.value
+                value = ev.control.value
 
                 if value:
-                    base_date = (
-                        selected_datetime.date()
-                        if selected_datetime
-                        else datetime.now().date()
-                    )
+                    if selected_datetime:
+                        selected_date = selected_datetime.date()
+                    else:
+                        selected_date = datetime.now().date()
 
                     selected_datetime = datetime(
-                        base_date.year,
-                        base_date.month,
-                        base_date.day,
+                        selected_date.year,
+                        selected_date.month,
+                        selected_date.day,
                         value.hour,
                         value.minute
                     )
 
                     refresh_text()
 
-            time_picker = ft.TimePicker(
+            picker = ft.TimePicker(
                 on_change=time_changed
             )
 
-            page.show_dialog(time_picker)
+            page.show_dialog(picker)
 
         async def save_reminder(e):
             if selected_datetime is None:
@@ -507,7 +574,7 @@ def main(page: ft.Page):
 
             if selected_datetime < minimum_time:
                 show_message(
-                    "Please choose a time at least 3 minutes from now."
+                    "Choose a time at least 3 minutes from now."
                 )
                 return
 
@@ -517,15 +584,14 @@ def main(page: ft.Page):
                 pass
 
             try:
-                exact_allowed = (
-                    await notifications.request_exact_alarm_permission()
-                )
+                exact_allowed = await notifications.request_exact_alarm_permission()
             except Exception:
                 exact_allowed = False
 
-            notification_id = int(
-                datetime.now().timestamp() * 1000
-            ) % 2147480000
+            notification_id = (
+                int(datetime.now().timestamp() * 1000)
+                % 2147480000
+            )
 
             try:
                 await notifications.schedule_notification(
@@ -561,6 +627,8 @@ def main(page: ft.Page):
                     after_save()
 
             except Exception as error:
+                print("Notification error:", error)
+
                 task["reminder"] = selected_datetime.isoformat()
                 task["notification_id"] = None
 
@@ -570,11 +638,8 @@ def main(page: ft.Page):
                 page.update()
 
                 show_message(
-                    "Reminder saved, but notification scheduling failed. "
-                    "Test notifications on Android."
+                    "Reminder saved, but notification scheduling failed."
                 )
-
-                print("Notification error:", error)
 
                 if after_save:
                     after_save()
@@ -601,36 +666,13 @@ def main(page: ft.Page):
             if after_save:
                 after_save()
 
-        current_text = ft.Text(
-            (
-                selected_datetime.strftime(
-                    "%d %b %Y • %I:%M %p"
-                )
-                if selected_datetime
-                else "No reminder selected"
-            ),
-            size=14,
-            color=GREY
-        )
-
-        def refresh_text():
-            current_text.value = (
-                selected_datetime.strftime(
-                    "%d %b %Y • %I:%M %p"
-                )
-                if selected_datetime
-                else "No reminder selected"
-            )
-
-            page.update()
-
         dialog = ft.AlertDialog(
             modal=True,
             title=ft.Row(
                 controls=[
                     ft.Icon(
-                        ft.Icons.NOTIFICATIONS_ACTIVE,
-                        color=RED
+                        ft.Icons.NOTIFICATIONS_ACTIVE_ROUNDED,
+                        color=BLUE
                     ),
                     ft.Text(
                         "Task Reminder",
@@ -644,13 +686,19 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.Button(
-                                content=ft.Text("Date"),
+                                content=ft.Text(
+                                    "Date",
+                                    weight=ft.FontWeight.BOLD
+                                ),
                                 icon=ft.Icons.CALENDAR_MONTH,
                                 on_click=open_date_picker,
                                 expand=True
                             ),
                             ft.Button(
-                                content=ft.Text("Time"),
+                                content=ft.Text(
+                                    "Time",
+                                    weight=ft.FontWeight.BOLD
+                                ),
                                 icon=ft.Icons.ACCESS_TIME,
                                 on_click=open_time_picker,
                                 expand=True
@@ -668,8 +716,11 @@ def main(page: ft.Page):
                     on_click=remove_reminder
                 ),
                 ft.Button(
-                    content=ft.Text("Save Reminder"),
-                    bgcolor=RED,
+                    content=ft.Text(
+                        "Save Reminder",
+                        weight=ft.FontWeight.BOLD
+                    ),
+                    bgcolor=BLUE,
                     color=WHITE,
                     on_click=save_reminder
                 )
@@ -687,7 +738,7 @@ def main(page: ft.Page):
             multiline=True,
             min_lines=3,
             max_lines=6,
-            border_radius=14
+            border_radius=15
         )
 
         category_box = ft.Dropdown(
@@ -719,56 +770,59 @@ def main(page: ft.Page):
         reminder_label = ft.Text(
             "No reminder set",
             size=13,
+            weight=ft.FontWeight.W_500,
             color=GREY
         )
 
         def update_reminder_label():
             selected = reminder_data["datetime"]
 
-            if selected:
-                reminder_label.value = (
-                    "🔔 "
-                    + selected.strftime(
-                        "%d %b %Y • %I:%M %p"
-                    )
+            reminder_label.value = (
+                "🔔 " + selected.strftime(
+                    "%d %b %Y • %I:%M %p"
                 )
-            else:
-                reminder_label.value = "No reminder set"
+                if selected
+                else "No reminder set"
+            )
 
             page.update()
 
         def choose_date(e):
-            today = datetime.now()
+            today = datetime.now().date()
 
             def changed(ev):
-                value = date_picker.value
+                value = ev.control.value
+                parsed = parse_picker_date(value)
 
-                if value:
-                    if isinstance(value, datetime):
-                        chosen = value.date()
-                    else:
-                        chosen = value
+                if parsed:
+                    year, month, day = parsed
 
                     current = reminder_data["datetime"]
 
                     if current:
-                        selected_time = current.time()
+                        hour = current.hour
+                        minute = current.minute
                     else:
-                        selected_time = datetime.now().time()
+                        now = datetime.now()
+                        hour = now.hour
+                        minute = now.minute
 
                     reminder_data["datetime"] = datetime(
-                        chosen.year,
-                        chosen.month,
-                        chosen.day,
-                        selected_time.hour,
-                        selected_time.minute
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
                     )
 
                     update_reminder_label()
 
-            date_picker = ft.DatePicker(
-                current_date=today,
-                first_date=today,
+            picker = ft.DatePicker(
+                first_date=datetime(
+                    today.year,
+                    today.month,
+                    today.day
+                ),
                 last_date=datetime(
                     today.year + 5,
                     12,
@@ -777,11 +831,11 @@ def main(page: ft.Page):
                 on_change=changed
             )
 
-            page.show_dialog(date_picker)
+            page.show_dialog(picker)
 
         def choose_time(e):
             def changed(ev):
-                value = time_picker.value
+                value = ev.control.value
 
                 if value:
                     current = reminder_data["datetime"]
@@ -801,11 +855,11 @@ def main(page: ft.Page):
 
                     update_reminder_label()
 
-            time_picker = ft.TimePicker(
+            picker = ft.TimePicker(
                 on_change=changed
             )
 
-            page.show_dialog(time_picker)
+            page.show_dialog(picker)
 
         def clear_reminder(e):
             reminder_data["datetime"] = None
@@ -825,7 +879,7 @@ def main(page: ft.Page):
 
                 if reminder_dt < minimum_time:
                     show_message(
-                        "Please choose a time at least 3 minutes from now."
+                        "Choose a time at least 3 minutes from now."
                     )
                     return
 
@@ -852,15 +906,14 @@ def main(page: ft.Page):
                     pass
 
                 try:
-                    exact_allowed = (
-                        await notifications.request_exact_alarm_permission()
-                    )
+                    exact_allowed = await notifications.request_exact_alarm_permission()
                 except Exception:
                     exact_allowed = False
 
-                notification_id = int(
-                    datetime.now().timestamp() * 1000
-                ) % 2147480000
+                notification_id = (
+                    int(datetime.now().timestamp() * 1000)
+                    % 2147480000
+                )
 
                 try:
                     await notifications.schedule_notification(
@@ -882,23 +935,13 @@ def main(page: ft.Page):
                     task["notification_id"] = notification_id
 
                 except Exception as error:
-                    task["reminder"] = None
-                    task["notification_id"] = None
-
                     print(
                         "Notification scheduling error:",
                         error
                     )
 
-                    save_data()
-                    show_tasks()
-
-                    show_message(
-                        "Task saved, but notification scheduling failed. "
-                        "Test the reminder on Android."
-                    )
-
-                    return
+                    task["reminder"] = None
+                    task["notification_id"] = None
 
             save_data()
             show_tasks()
@@ -914,7 +957,8 @@ def main(page: ft.Page):
                         ft.Text(
                             "NEW TASK",
                             size=25,
-                            weight=ft.FontWeight.BOLD
+                            weight=ft.FontWeight.BOLD,
+                            color=TEXT
                         )
                     ]
                 ),
@@ -933,13 +977,13 @@ def main(page: ft.Page):
                                         controls=[
                                             ft.Container(
                                                 content=ft.Icon(
-                                                    ft.Icons.NOTIFICATIONS_ACTIVE,
-                                                    color=RED
+                                                    ft.Icons.NOTIFICATIONS_ACTIVE_ROUNDED,
+                                                    color=BLUE
                                                 ),
-                                                width=42,
-                                                height=42,
+                                                width=44,
+                                                height=44,
                                                 alignment=ft.Alignment.CENTER,
-                                                bgcolor=PINK_LIGHT,
+                                                bgcolor=BLUE_LIGHT,
                                                 border_radius=13
                                             ),
                                             ft.Column(
@@ -947,7 +991,8 @@ def main(page: ft.Page):
                                                     ft.Text(
                                                         "Reminder",
                                                         size=17,
-                                                        weight=ft.FontWeight.BOLD
+                                                        weight=ft.FontWeight.BOLD,
+                                                        color=TEXT
                                                     ),
                                                     reminder_label
                                                 ],
@@ -960,13 +1005,19 @@ def main(page: ft.Page):
                                     ft.Row(
                                         controls=[
                                             ft.Button(
-                                                content=ft.Text("Choose date"),
+                                                content=ft.Text(
+                                                    "Choose date",
+                                                    weight=ft.FontWeight.BOLD
+                                                ),
                                                 icon=ft.Icons.CALENDAR_MONTH,
                                                 on_click=choose_date,
                                                 expand=True
                                             ),
                                             ft.Button(
-                                                content=ft.Text("Choose time"),
+                                                content=ft.Text(
+                                                    "Choose time",
+                                                    weight=ft.FontWeight.BOLD
+                                                ),
                                                 icon=ft.Icons.ACCESS_TIME,
                                                 on_click=choose_time,
                                                 expand=True
@@ -982,18 +1033,21 @@ def main(page: ft.Page):
                                 spacing=10
                             ),
                             padding=16,
-                            bgcolor="#FFF4F5",
+                            bgcolor=BLUE_SOFT,
                             border_radius=18,
                             border=ft.Border.all(
                                 1,
-                                "#FFE0E3"
+                                LIGHT_GREY
                             )
                         ),
                         ft.Button(
-                            content=ft.Text("Save Task"),
-                            icon=ft.Icons.SAVE,
+                            content=ft.Text(
+                                "Save Task",
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            icon=ft.Icons.SAVE_ROUNDED,
                             height=52,
-                            bgcolor=RED,
+                            bgcolor=BLUE,
                             color=WHITE,
                             on_click=save_task
                         )
@@ -1022,14 +1076,20 @@ def main(page: ft.Page):
                 title,
                 weight=ft.FontWeight.BOLD
             ),
-            content=ft.Text(message),
+            content=ft.Text(
+                message,
+                weight=ft.FontWeight.W_500
+            ),
             actions=[
                 ft.TextButton(
                     "Cancel",
                     on_click=cancel
                 ),
                 ft.Button(
-                    content=ft.Text("Delete"),
+                    content=ft.Text(
+                        "Delete",
+                        weight=ft.FontWeight.BOLD
+                    ),
                     bgcolor=RED,
                     color=WHITE,
                     on_click=confirm
@@ -1046,6 +1106,8 @@ def main(page: ft.Page):
         task_text = ft.Text(
             f"{number}. {task.get('text', '')}",
             size=16,
+            weight=ft.FontWeight.W_600,
+            color=TEXT,
             expand=True,
             max_lines=5,
             overflow=ft.TextOverflow.ELLIPSIS
@@ -1054,7 +1116,7 @@ def main(page: ft.Page):
         if completed:
             task_text.style = ft.TextStyle(
                 decoration=ft.TextDecoration.LINE_THROUGH,
-                color="#999999"
+                color=GREY
             )
 
         def mark(e):
@@ -1072,7 +1134,7 @@ def main(page: ft.Page):
                 multiline=True,
                 min_lines=3,
                 max_lines=6,
-                border_radius=14
+                border_radius=15
             )
 
             def save_edit(e):
@@ -1083,12 +1145,10 @@ def main(page: ft.Page):
                     return
 
                 task["text"] = new_text
-
                 save_data()
 
                 dialog.open = False
                 page.update()
-
                 show_tasks()
 
             def close(e):
@@ -1097,7 +1157,10 @@ def main(page: ft.Page):
 
             dialog = ft.AlertDialog(
                 modal=True,
-                title=ft.Text("Edit Task"),
+                title=ft.Text(
+                    "Edit Task",
+                    weight=ft.FontWeight.BOLD
+                ),
                 content=edit_box,
                 actions=[
                     ft.TextButton(
@@ -1105,8 +1168,11 @@ def main(page: ft.Page):
                         on_click=close
                     ),
                     ft.Button(
-                        content=ft.Text("Save"),
-                        bgcolor=RED,
+                        content=ft.Text(
+                            "Save",
+                            weight=ft.FontWeight.BOLD
+                        ),
+                        bgcolor=BLUE,
                         color=WHITE,
                         on_click=save_edit
                     )
@@ -1157,15 +1223,11 @@ def main(page: ft.Page):
         notification_button = ft.Container(
             content=ft.IconButton(
                 icon=(
-                    ft.Icons.NOTIFICATIONS_ACTIVE
+                    ft.Icons.NOTIFICATIONS_ACTIVE_ROUNDED
                     if reminder
                     else ft.Icons.NOTIFICATIONS_NONE_OUTLINED
                 ),
-                icon_color=(
-                    RED
-                    if reminder
-                    else GREY
-                ),
+                icon_color=BLUE if reminder else GREY,
                 icon_size=22,
                 tooltip=(
                     "Change reminder"
@@ -1178,9 +1240,9 @@ def main(page: ft.Page):
             height=45,
             alignment=ft.Alignment.CENTER,
             bgcolor=(
-                PINK_LIGHT
+                BLUE_LIGHT
                 if reminder
-                else "#F2F2F5"
+                else "#EEF1F6"
             ),
             border_radius=14
         )
@@ -1189,28 +1251,26 @@ def main(page: ft.Page):
 
         if reminder:
             try:
-                reminder_dt = datetime.fromisoformat(
-                    reminder
-                )
+                reminder_dt = datetime.fromisoformat(reminder)
 
                 reminder_label = ft.Row(
                     controls=[
                         ft.Icon(
                             ft.Icons.ACCESS_TIME,
                             size=14,
-                            color=RED
+                            color=BLUE
                         ),
                         ft.Text(
                             reminder_dt.strftime(
                                 "%d %b • %I:%M %p"
                             ),
                             size=11,
+                            weight=ft.FontWeight.W_500,
                             color=GREY
                         )
                     ],
                     spacing=4
                 )
-
             except Exception:
                 reminder_label = None
 
@@ -1219,12 +1279,13 @@ def main(page: ft.Page):
                 f"{task.get('category', 'General')} • "
                 f"{task.get('priority', 'Medium')}",
                 size=11,
+                weight=ft.FontWeight.W_500,
                 color=GREY
             ),
             ft.Text(
                 task.get("time", ""),
                 size=10,
-                color="#999999"
+                color=GREY
             )
         ]
 
@@ -1238,12 +1299,12 @@ def main(page: ft.Page):
                         gesture_text,
                         ft.IconButton(
                             icon=(
-                                ft.Icons.CHECK_CIRCLE
+                                ft.Icons.CHECK_CIRCLE_ROUNDED
                                 if completed
                                 else ft.Icons.CHECK_CIRCLE_OUTLINE
                             ),
                             icon_color=(
-                                RED
+                                GREEN
                                 if completed
                                 else GREY
                             ),
@@ -1259,27 +1320,27 @@ def main(page: ft.Page):
             expand=True
         )
 
-        card = ft.Container(
-            content=ft.Row(
-                controls=[
-                    notification_button,
-                    task_body
-                ],
-                spacing=10,
-                vertical_alignment=ft.CrossAxisAlignment.START
-            ),
-            padding=13,
-            margin=ft.Margin(bottom=10),
-            bgcolor=WHITE,
-            border_radius=18,
-            border=ft.Border.all(
-                1,
-                LIGHT_GREY
-            ),
-            width=float("inf")
+        content.controls.append(
+            ft.Container(
+                content=ft.Row(
+                    controls=[
+                        notification_button,
+                        task_body
+                    ],
+                    spacing=10,
+                    vertical_alignment=ft.CrossAxisAlignment.START
+                ),
+                padding=14,
+                margin=ft.Margin(bottom=10),
+                bgcolor=WHITE,
+                border_radius=20,
+                border=ft.Border.all(
+                    1,
+                    LIGHT_GREY
+                ),
+                width=float("inf")
+            )
         )
-
-        content.controls.append(card)
 
     def show_tasks():
         content.controls.clear()
@@ -1302,7 +1363,7 @@ def main(page: ft.Page):
                             width=48,
                             height=48,
                             alignment=ft.Alignment.CENTER,
-                            bgcolor=RED,
+                            bgcolor=BLUE,
                             border_radius=15
                         )
                     ],
@@ -1319,24 +1380,26 @@ def main(page: ft.Page):
                         controls=[
                             ft.Container(
                                 content=ft.Icon(
-                                    ft.Icons.CHECKLIST,
+                                    ft.Icons.CHECKLIST_ROUNDED,
                                     size=45,
-                                    color=RED
+                                    color=BLUE
                                 ),
                                 width=80,
                                 height=80,
                                 alignment=ft.Alignment.CENTER,
-                                bgcolor=RED_LIGHT,
+                                bgcolor=BLUE_LIGHT,
                                 border_radius=25
                             ),
                             ft.Text(
                                 "No tasks yet",
                                 size=20,
-                                weight=ft.FontWeight.BOLD
+                                weight=ft.FontWeight.BOLD,
+                                color=TEXT
                             ),
                             ft.Text(
                                 "Tap + to add your first task.",
-                                color=GREY
+                                color=GREY,
+                                weight=ft.FontWeight.W_500
                             )
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -1361,7 +1424,7 @@ def main(page: ft.Page):
             multiline=True,
             min_lines=8,
             max_lines=15,
-            border_radius=14
+            border_radius=15
         )
 
         category_box = ft.Dropdown(
@@ -1406,7 +1469,8 @@ def main(page: ft.Page):
                         ft.Text(
                             "NEW NOTE",
                             size=25,
-                            weight=ft.FontWeight.BOLD
+                            weight=ft.FontWeight.BOLD,
+                            color=TEXT
                         )
                     ]
                 ),
@@ -1418,10 +1482,13 @@ def main(page: ft.Page):
                         text_box,
                         category_box,
                         ft.Button(
-                            content=ft.Text("Save Note"),
-                            icon=ft.Icons.SAVE,
+                            content=ft.Text(
+                                "Save Note",
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            icon=ft.Icons.SAVE_ROUNDED,
                             height=52,
-                            bgcolor=RED,
+                            bgcolor=BLUE,
                             color=WHITE,
                             on_click=save_note
                         )
@@ -1438,6 +1505,8 @@ def main(page: ft.Page):
         text = ft.Text(
             f"{number}. {note.get('text', '')}",
             size=16,
+            weight=ft.FontWeight.W_600,
+            color=TEXT,
             expand=True,
             max_lines=7,
             overflow=ft.TextOverflow.ELLIPSIS
@@ -1449,7 +1518,7 @@ def main(page: ft.Page):
                 multiline=True,
                 min_lines=5,
                 max_lines=10,
-                border_radius=14
+                border_radius=15
             )
 
             def save_edit(e):
@@ -1460,12 +1529,10 @@ def main(page: ft.Page):
                     return
 
                 note["text"] = new_text
-
                 save_data()
 
                 dialog.open = False
                 page.update()
-
                 show_notes()
 
             def close(e):
@@ -1474,7 +1541,10 @@ def main(page: ft.Page):
 
             dialog = ft.AlertDialog(
                 modal=True,
-                title=ft.Text("Edit Note"),
+                title=ft.Text(
+                    "Edit Note",
+                    weight=ft.FontWeight.BOLD
+                ),
                 content=edit_box,
                 actions=[
                     ft.TextButton(
@@ -1482,8 +1552,11 @@ def main(page: ft.Page):
                         on_click=close
                     ),
                     ft.Button(
-                        content=ft.Text("Save"),
-                        bgcolor=RED,
+                        content=ft.Text(
+                            "Save",
+                            weight=ft.FontWeight.BOLD
+                        ),
+                        bgcolor=BLUE,
                         color=WHITE,
                         on_click=save_edit
                     )
@@ -1520,12 +1593,13 @@ def main(page: ft.Page):
                         ft.Text(
                             note.get("category", "General"),
                             size=11,
+                            weight=ft.FontWeight.W_500,
                             color=GREY
                         ),
                         ft.Text(
                             note.get("time", ""),
                             size=10,
-                            color="#999999"
+                            color=GREY
                         )
                     ],
                     spacing=5
@@ -1533,7 +1607,7 @@ def main(page: ft.Page):
                 padding=14,
                 margin=ft.Margin(bottom=10),
                 bgcolor=WHITE,
-                border_radius=18,
+                border_radius=20,
                 border=ft.Border.all(
                     1,
                     LIGHT_GREY
@@ -1563,7 +1637,7 @@ def main(page: ft.Page):
                             width=48,
                             height=48,
                             alignment=ft.Alignment.CENTER,
-                            bgcolor=RED,
+                            bgcolor=BLUE,
                             border_radius=15
                         )
                     ],
@@ -1579,9 +1653,10 @@ def main(page: ft.Page):
                     content=ft.Column(
                         controls=[
                             ft.Container(
-                                content=ft.Text(
-                                    "📝",
-                                    size=38
+                                content=ft.Icon(
+                                    ft.Icons.EDIT_NOTE_ROUNDED,
+                                    color=BLUE,
+                                    size=40
                                 ),
                                 width=80,
                                 height=80,
@@ -1592,11 +1667,13 @@ def main(page: ft.Page):
                             ft.Text(
                                 "No notes yet",
                                 size=20,
-                                weight=ft.FontWeight.BOLD
+                                weight=ft.FontWeight.BOLD,
+                                color=TEXT
                             ),
                             ft.Text(
                                 "Tap + to write something.",
-                                color=GREY
+                                color=GREY,
+                                weight=ft.FontWeight.W_500
                             )
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -1618,12 +1695,10 @@ def main(page: ft.Page):
         search = ft.TextField(
             hint_text="Search your notebook...",
             prefix_icon=ft.Icons.SEARCH,
-            border_radius=14
+            border_radius=15
         )
 
-        results = ft.Column(
-            spacing=8
-        )
+        results = ft.Column(spacing=8)
 
         def perform_search(e):
             results.controls.clear()
@@ -1637,11 +1712,7 @@ def main(page: ft.Page):
             found = False
 
             for number, task in enumerate(tasks, start=1):
-                if query in task.get(
-                    "text",
-                    ""
-                ).lower():
-
+                if query in task.get("text", "").lower():
                     found = True
 
                     results.controls.append(
@@ -1649,13 +1720,13 @@ def main(page: ft.Page):
                             ft.Row(
                                 controls=[
                                     ft.Icon(
-                                        ft.Icons.CHECK,
-                                        color=RED
+                                        ft.Icons.CHECK_CIRCLE_OUTLINE,
+                                        color=BLUE
                                     ),
                                     ft.Text(
-                                        f"Task {number}: "
-                                        f"{task.get('text', '')}",
-                                        expand=True
+                                        f"Task {number}: {task.get('text', '')}",
+                                        expand=True,
+                                        weight=ft.FontWeight.W_500
                                     )
                                 ]
                             ),
@@ -1664,22 +1735,21 @@ def main(page: ft.Page):
                     )
 
             for number, note in enumerate(notes, start=1):
-                if query in note.get(
-                    "text",
-                    ""
-                ).lower():
-
+                if query in note.get("text", "").lower():
                     found = True
 
                     results.controls.append(
                         make_card(
                             ft.Row(
                                 controls=[
-                                    ft.Text("📝"),
+                                    ft.Icon(
+                                        ft.Icons.EDIT_NOTE_ROUNDED,
+                                        color=BLUE
+                                    ),
                                     ft.Text(
-                                        f"Note {number}: "
-                                        f"{note.get('text', '')}",
-                                        expand=True
+                                        f"Note {number}: {note.get('text', '')}",
+                                        expand=True,
+                                        weight=ft.FontWeight.W_500
                                     )
                                 ]
                             ),
@@ -1691,7 +1761,8 @@ def main(page: ft.Page):
                 results.controls.append(
                     ft.Text(
                         "Nothing found.",
-                        color=GREY
+                        color=GREY,
+                        weight=ft.FontWeight.W_500
                     )
                 )
 
@@ -1724,9 +1795,7 @@ def main(page: ft.Page):
 
         theme_switch = ft.Switch(
             label="Dark mode",
-            value=(
-                page.theme_mode == ft.ThemeMode.DARK
-            )
+            value=page.theme_mode == ft.ThemeMode.DARK
         )
 
         def change_theme(e):
@@ -1735,7 +1804,11 @@ def main(page: ft.Page):
                 if theme_switch.value
                 else ft.ThemeMode.LIGHT
             )
-
+            page.bgcolor = (
+                "#101827"
+                if theme_switch.value
+                else BACKGROUND
+            )
             page.update()
 
         theme_switch.on_change = change_theme
@@ -1762,14 +1835,15 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.Container(
-                                content=ft.Text(
-                                    "⭐",
+                                content=ft.Icon(
+                                    ft.Icons.STAR_ROUNDED,
+                                    color=BLUE,
                                     size=25
                                 ),
                                 width=45,
                                 height=45,
                                 alignment=ft.Alignment.CENTER,
-                                bgcolor="#FFEBC1",
+                                bgcolor=BLUE_LIGHT,
                                 border_radius=13
                             ),
                             ft.Column(
@@ -1777,11 +1851,13 @@ def main(page: ft.Page):
                                     ft.Text(
                                         "Notebook Premium",
                                         size=18,
-                                        weight=ft.FontWeight.BOLD
+                                        weight=ft.FontWeight.BOLD,
+                                        color=TEXT
                                     ),
                                     ft.Text(
                                         "₦500 / month",
                                         size=13,
+                                        weight=ft.FontWeight.W_500,
                                         color=GREY
                                     )
                                 ],
@@ -1793,18 +1869,24 @@ def main(page: ft.Page):
                     ft.Divider(),
                     ft.Text(
                         "Premium features",
-                        weight=ft.FontWeight.BOLD
+                        weight=ft.FontWeight.BOLD,
+                        color=TEXT
                     ),
                     ft.Text(
                         "• Advanced reminders\n"
                         "• More customization\n"
                         "• Premium notebook tools\n"
-                        "• More productivity features"
+                        "• More productivity features",
+                        weight=ft.FontWeight.W_500,
+                        color=TEXT
                     ),
                     ft.Button(
-                        content=ft.Text("View Premium"),
+                        content=ft.Text(
+                            "View Premium",
+                            weight=ft.FontWeight.BOLD
+                        ),
                         icon=ft.Icons.STAR_OUTLINE,
-                        bgcolor=RED,
+                        bgcolor=BLUE,
                         color=WHITE,
                         on_click=lambda e: show_premium()
                     )
@@ -1812,11 +1894,11 @@ def main(page: ft.Page):
                 spacing=8
             ),
             padding=17,
-            bgcolor=YELLOW_LIGHT,
+            bgcolor=BLUE_SOFT,
             border_radius=18,
             border=ft.Border.all(
                 1,
-                "#F3D99A"
+                LIGHT_GREY
             )
         )
 
@@ -1834,18 +1916,20 @@ def main(page: ft.Page):
                         ft.Container(
                             content=ft.Icon(
                                 ft.Icons.PERSON_OUTLINE,
-                                color=RED
+                                color=BLUE
                             ),
                             width=42,
                             height=42,
                             alignment=ft.Alignment.CENTER,
-                            bgcolor=RED_LIGHT,
+                            bgcolor=BLUE_LIGHT,
                             border_radius=13
                         ),
                         ft.Text(
                             user_name
                             if user_name
                             else "Set your name",
+                            weight=ft.FontWeight.W_600,
+                            color=TEXT,
                             expand=True
                         ),
                         ft.IconButton(
@@ -1893,15 +1977,19 @@ def main(page: ft.Page):
                         ft.Text(
                             "Storage",
                             size=18,
-                            weight=ft.FontWeight.BOLD
+                            weight=ft.FontWeight.BOLD,
+                            color=TEXT
                         ),
                         ft.Text(
-                            f"{len(tasks)} tasks • "
-                            f"{len(notes)} notes",
-                            color=GREY
+                            f"{len(tasks)} tasks • {len(notes)} notes",
+                            color=GREY,
+                            weight=ft.FontWeight.W_500
                         ),
                         ft.Button(
-                            content=ft.Text("Clear All Data"),
+                            content=ft.Text(
+                                "Clear All Data",
+                                weight=ft.FontWeight.BOLD
+                            ),
                             icon=ft.Icons.DELETE_FOREVER,
                             bgcolor=RED,
                             color=WHITE,
@@ -1941,13 +2029,15 @@ def main(page: ft.Page):
                         "₦500 / month",
                         size=25,
                         weight=ft.FontWeight.BOLD,
-                        color=RED
+                        color=BLUE
                     ),
                     ft.Text(
-                        "Premium payment will be connected later."
+                        "Premium payment will be connected later.",
+                        weight=ft.FontWeight.W_500
                     ),
                     ft.Text(
-                        "For now, Premium remains a preview."
+                        "For now, Premium remains a preview.",
+                        weight=ft.FontWeight.W_500
                     )
                 ],
                 tight=True,
@@ -1957,11 +2047,7 @@ def main(page: ft.Page):
                 ft.TextButton(
                     "Close",
                     on_click=lambda e: (
-                        setattr(
-                            dialog,
-                            "open",
-                            False
-                        ),
+                        setattr(dialog, "open", False),
                         page.update()
                     )
                 )
@@ -2033,4 +2119,7 @@ def main(page: ft.Page):
         show_home()
 
 
-ft.run(main)
+ft.run(main)                                                  spacing=8
+)                                                        )
+]
+            
