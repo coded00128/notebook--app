@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flet==0.86.5 flet-android-notifications==0.10.0
 
-      - name: Generate Flet Android project
+      - name: Generate Android project
         run: |
           flet build apk \
             --module-name notebook.py \
@@ -33,21 +33,16 @@ jobs:
             --verbose
         continue-on-error: true
 
-      - name: Enable Android core library desugaring
+      - name: Enable core library desugaring
         run: |
           set -e
 
           GRADLE_FILE="build/flutter/android/app/build.gradle.kts"
 
-          echo "===== CHECKING GRADLE FILE ====="
           if [ ! -f "$GRADLE_FILE" ]; then
-            echo "ERROR: Gradle file was not generated:"
-            echo "$GRADLE_FILE"
+            echo "ERROR: Android Gradle file was not generated."
             exit 1
           fi
-
-          echo "===== ORIGINAL GRADLE FILE ====="
-          cat "$GRADLE_FILE"
 
           python - <<'PY'
           from pathlib import Path
@@ -55,48 +50,46 @@ jobs:
           path = Path("build/flutter/android/app/build.gradle.kts")
           text = path.read_text()
 
-          # Add core library desugaring to compileOptions.
+          # Enable core library desugaring.
           if "isCoreLibraryDesugaringEnabled = true" not in text:
-              marker = "compileOptions {"
-              if marker not in text:
-                  raise SystemExit(
-                      "ERROR: compileOptions block was not found."
-                  )
+              if "compileOptions {" not in text:
+                  raise SystemExit("compileOptions block not found.")
 
               text = text.replace(
-                  marker,
-                  marker + "\n        isCoreLibraryDesugaringEnabled = true",
-                  1
+                  "compileOptions {",
+                  "compileOptions {\n        isCoreLibraryDesugaringEnabled = true",
+                  1,
               )
 
-          # Add the desugaring dependency.
-          dependency = (
-              'coreLibraryDesugaring("com.android.tools:'
-              'desugar_jdk_libs:2.1.4")'
-          )
-
+          # Add desugaring library.
           if "coreLibraryDesugaring(" not in text:
-              marker = "dependencies {"
-              if marker not in text:
-                  raise SystemExit(
-                      "ERROR: dependencies block was not found."
-                  )
+              if "dependencies {" not in text:
+                  raise SystemExit("dependencies block not found.")
 
               text = text.replace(
-                  marker,
-                  marker + f"\n    {dependency}",
-                  1
+                  "dependencies {",
+                  'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")',
+                  1,
               )
 
           path.write_text(text)
           PY
 
-          echo "===== PATCHED GRADLE FILE ====="
-          cat "$GRADLE_FILE"
+          echo "===== DESUGARING CONFIGURATION ====="
+          grep -n -A5 -B3 "compileOptions" "$GRADLE_FILE" || true
+          grep -n "coreLibraryDesugaring" "$GRADLE_FILE" || true
+
+      - name: Set up Flutter PATH
+        run: |
+          echo "/home/runner/flutter/3.44.8/bin" >> "$GITHUB_PATH"
+          export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
+          flutter --version
 
       - name: Build APK
         run: |
+          export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
           cd build/flutter
+
           flutter build apk \
             --target-platform android-arm64,android-x64,android-arm \
             --build-number 2 \
@@ -104,14 +97,15 @@ jobs:
             --no-version-check \
             --suppress-analytics
 
-      - name: Copy APK to expected location
+      - name: Copy APK
         run: |
           mkdir -p build/apk
+
           find build/flutter/build/app/outputs/apk/release \
             -name "*.apk" \
             -exec cp {} build/apk/ \;
 
-          echo "===== GENERATED APK ====="
+          echo "===== APK ====="
           ls -lh build/apk/
 
       - name: Show Gradle logs if build fails
@@ -124,13 +118,9 @@ jobs:
             -print \
             -exec tail -n 200 {} \; 2>/dev/null || true
 
-          echo "===== ANDROID BUILD FILES ====="
-
-          find build/flutter/android \
-            -maxdepth 4 \
-            -type f 2>/dev/null | sort | head -200 || true
-
-      - name: Build APK
-        run: |
-          cd build/flutter
-          /home/runner/flutter/3.44.8/bin/flutter build apk \
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-apk
+          path: build/apk/*.apk
