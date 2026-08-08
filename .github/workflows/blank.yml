@@ -14,22 +14,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
-      - name: Install dependencies
+      - name: Check Python syntax
+        run: |
+          python -m py_compile notebook.py
+
+      - name: Install Flet
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "flet==0.86.5"
-          python -m pip install flet-android-notifications
-
-      - name: Generate Flutter project
-        continue-on-error: true
-        run: |
-          flet build apk --module-name notebook.py --yes --verbose
-
-      - name: Patch Android notifications
-        run: |
-          flet-android-notifications-patch --project-root build/flutter
+          python -m pip install flet==0.86.5 flet-android-notifications
 
       - name: Build APK
         run: |
