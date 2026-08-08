@@ -1923,18 +1923,16 @@ def main(page: ft.Page):
         )
 
         def change_theme(e):
-            nonlocal (
-                BLUE_LIGHT,
-                BLUE_SOFT,
-                WHITE,
-                BACKGROUND,
-                TEXT,
-                GREY,
-                LIGHT_GREY,
-                RED_LIGHT,
-            )
-
             if theme_switch.value:
+                page.theme_mode = ft.ThemeMode.DARK
+                page.bgcolor = "#0F172A"
+            else:
+                page.theme_mode = ft.ThemeMode.LIGHT
+                page.bgcolor = "#F5F8FF"
+
+            show_settings()
+
+        theme_switch.on_change = change_theme
                 # DARK MODE PALETTE
                 BLUE_LIGHT = "#172554"
                 BLUE_SOFT = "#172033"
