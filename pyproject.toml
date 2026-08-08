@@ -1,19 +1,14 @@
+[project]
 name = "my-notebook"
-version = "1.0.1"
+version = "1.0.0"
 description = "My Notebook app"
 requires-python = ">=3.10"
-
 dependencies = [
     "flet==0.86.5",
-    "flet-android-notifications==0.10.0"
+    "flet-android-notifications"
 ]
 
 [tool.flet]
 product = "My Notebook"
 org = "com.mynotebook"
 build_number = 2
-
-[tool.flet.android.permission]
-"android.permission.POST_NOTIFICATIONS" = true
-"android.permission.SCHEDULE_EXACT_ALARM" = true
-"android.permission.RECEIVE_BOOT_COMPLETED" = true
