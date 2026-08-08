@@ -1,16 +1,17 @@
-import flet as ft
-import json
-import os
-from datetime import datetime, timedelta
-
-from flet_android_notifications import FletAndroidNotifications
-
-def main(page: ft.Page):
-page.title = "My Notebook"
-page.padding = 0
-page.spacing = 0
-page.theme_mode = ft.ThemeMode.LIGHT
-
+import flet as ft  
+import json  
+import os  
+from datetime import datetime, timedelta  
+  
+from flet\_android\_notifications import FletAndroidNotifications  
+  
+def main(page: ft.Page):  
+    page.title = "My Notebook"  
+    page.padding = 0  
+    page.spacing = 0  
+    page.theme\_mode = ft.ThemeMode.LIGHT  
+  
+```  
 data_file = "notebook_data.json"
   
 
@@ -24,6 +25,8 @@ user_name = ""
 
   
 notifications = FletAndroidNotifications()
+  
+
   
 
   
@@ -4892,5 +4895,5 @@ if not user_name:
 else:
   
     show_home()
-
+  
 ft.run(main)
