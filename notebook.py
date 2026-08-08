@@ -1921,18 +1921,8 @@ def main(page: ft.Page):
             label="Dark mode",
             value=page.theme_mode == ft.ThemeMode.DARK,
         )
-
         def change_theme(e):
             if theme_switch.value:
-                page.theme_mode = ft.ThemeMode.DARK
-                page.bgcolor = "#0F172A"
-            else:
-                page.theme_mode = ft.ThemeMode.LIGHT
-                page.bgcolor = "#F5F8FF"
-
-            show_settings()
-
-        theme_switch.on_change = change_theme
                 # DARK MODE PALETTE
                 BLUE_LIGHT = "#172554"
                 BLUE_SOFT = "#172033"
@@ -1945,6 +1935,7 @@ def main(page: ft.Page):
 
                 page.theme_mode = ft.ThemeMode.DARK
                 page.bgcolor = BACKGROUND
+
             else:
                 # LIGHT MODE PALETTE
                 BLUE_LIGHT = "#EAF1FF"
@@ -1959,7 +1950,7 @@ def main(page: ft.Page):
                 page.theme_mode = ft.ThemeMode.LIGHT
                 page.bgcolor = BACKGROUND
 
-            # Rebuild the page so every explicit text/card color
+            # Rebuild the page so every so every explicit text/card color
             # changes immediately instead of remaining faded.
             show_settings()
 
