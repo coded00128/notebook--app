@@ -443,15 +443,28 @@ def main(page: ft.Page):
         )
 
         page.update()
-
-    def parse_picker_date(value):
-        if value is None:
-            return None
-
-        if hasattr(value, "year") and hasattr(value, "month") and hasattr(value, "day"):
-            return value.year, value.month, value.day
-
+def parse_picker_date(value):
+    if value is None:
         return None
+
+    if hasattr(value, "year") and hasattr(value, "month") and hasattr(value, "day"):
+        selected = datetime(
+            value.year,
+            value.month,
+            value.day
+        )
+
+        # Android/Flet DatePicker can return the selected
+        # date one day behind because of timezone conversion.
+        selected += timedelta(days=1)
+
+        return (
+            selected.year,
+            selected.month,
+            selected.day
+        )
+
+    return None
 
     def choose_reminder(task, after_save=None):
         current_reminder = task.get("reminder")
