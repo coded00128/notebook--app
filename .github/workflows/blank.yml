@@ -23,59 +23,27 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flet==0.86.5 flet-android-notifications
+          python -m pip install flet==0.86.5 flet-android-notifications==0.10.0
 
-      - name: Generate Android project
+      - name: Build APK
         run: |
           flet build apk \
             --module-name notebook.py \
             --yes \
             --verbose
 
-      - name: Enable Android core library desugaring
+      - name: Show Gradle logs if build fails
+        if: failure()
         run: |
-          python - <<'PY'
-          from pathlib import Path
+          echo "===== GRADLE ERROR LOGS ====="
+          find build/flutter -type f \( -name "*.log" -o -name "*.txt" \) -print -exec tail -n 200 {} \; 2>/dev/null || true
 
-          path = Path("build/flutter/android/app/build.gradle")
-          text = path.read_text()
-
-          if "coreLibraryDesugaringEnabled true" not in text:
-              text = text.replace(
-                  "android {",
-                  "android {\n"
-                  "    compileOptions {\n"
-                  "        coreLibraryDesugaringEnabled true\n"
-                  "        sourceCompatibility JavaVersion.VERSION_17\n"
-                  "        targetCompatibility JavaVersion.VERSION_17\n"
-                  "    }\n",
-                  1
-              )
-
-          if "coreLibraryDesugaring" not in text:
-              text = text.replace(
-                  "dependencies {",
-                  "dependencies {\n"
-                  "    coreLibraryDesugaring "
-                  "'com.android.tools:desugar_jdk_libs:2.1.5'\n",
-                  1
-              )
-
-          path.write_text(text)
-          PY
-
-      - name: Build final APK
-        run: |
-          cd build/flutter
-          flutter build apk \
-            --target-platform android-arm64,android-x64,android-arm \
-            --build-number 2 \
-            --build-name 1.0.0 \
-            --no-version-check \
-            --suppress-analytics
+          echo "===== GRADLE DIRECTORY ====="
+          find build/flutter/android -maxdepth 3 -type f 2>/dev/null | head -100 || true
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: notebook-apk
-          path: build/flutter/build/app/outputs/flutter-apk/*.apk
+          path: build/apk/*.apk
