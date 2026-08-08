@@ -2119,7 +2119,5 @@ def main(page: ft.Page):
         show_home()
 
 
-ft.run(main)                                                  spacing=8
-)                                                        )
-]
+ft.run(main)                                                
             
