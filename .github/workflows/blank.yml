@@ -25,21 +25,110 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flet==0.86.5 flet-android-notifications==0.10.0
 
-      - name: Build APK
+      - name: Generate Flet Android project
         run: |
           flet build apk \
             --module-name notebook.py \
             --yes \
             --verbose
+        continue-on-error: true
+
+      - name: Enable Android core library desugaring
+        run: |
+          set -e
+
+          GRADLE_FILE="build/flutter/android/app/build.gradle.kts"
+
+          echo "===== CHECKING GRADLE FILE ====="
+          if [ ! -f "$GRADLE_FILE" ]; then
+            echo "ERROR: Gradle file was not generated:"
+            echo "$GRADLE_FILE"
+            exit 1
+          fi
+
+          echo "===== ORIGINAL GRADLE FILE ====="
+          cat "$GRADLE_FILE"
+
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("build/flutter/android/app/build.gradle.kts")
+          text = path.read_text()
+
+          # Add core library desugaring to compileOptions.
+          if "isCoreLibraryDesugaringEnabled = true" not in text:
+              marker = "compileOptions {"
+              if marker not in text:
+                  raise SystemExit(
+                      "ERROR: compileOptions block was not found."
+                  )
+
+              text = text.replace(
+                  marker,
+                  marker + "\n        isCoreLibraryDesugaringEnabled = true",
+                  1
+              )
+
+          # Add the desugaring dependency.
+          dependency = (
+              'coreLibraryDesugaring("com.android.tools:'
+              'desugar_jdk_libs:2.1.4")'
+          )
+
+          if "coreLibraryDesugaring(" not in text:
+              marker = "dependencies {"
+              if marker not in text:
+                  raise SystemExit(
+                      "ERROR: dependencies block was not found."
+                  )
+
+              text = text.replace(
+                  marker,
+                  marker + f"\n    {dependency}",
+                  1
+              )
+
+          path.write_text(text)
+          PY
+
+          echo "===== PATCHED GRADLE FILE ====="
+          cat "$GRADLE_FILE"
+
+      - name: Build APK
+        run: |
+          cd build/flutter
+          flutter build apk \
+            --target-platform android-arm64,android-x64,android-arm \
+            --build-number 2 \
+            --build-name 1.0.0 \
+            --no-version-check \
+            --suppress-analytics
+
+      - name: Copy APK to expected location
+        run: |
+          mkdir -p build/apk
+          find build/flutter/build/app/outputs/apk/release \
+            -name "*.apk" \
+            -exec cp {} build/apk/ \;
+
+          echo "===== GENERATED APK ====="
+          ls -lh build/apk/
 
       - name: Show Gradle logs if build fails
         if: failure()
         run: |
           echo "===== GRADLE ERROR LOGS ====="
-          find build/flutter -type f \( -name "*.log" -o -name "*.txt" \) -print -exec tail -n 200 {} \; 2>/dev/null || true
 
-          echo "===== GRADLE DIRECTORY ====="
-          find build/flutter/android -maxdepth 3 -type f 2>/dev/null | head -100 || true
+          find build/flutter -type f \
+            \( -name "*.log" -o -name "*.txt" \) \
+            -print \
+            -exec tail -n 200 {} \; 2>/dev/null || true
+
+          echo "===== ANDROID BUILD FILES ====="
+
+          find build/flutter/android \
+            -maxdepth 4 \
+            -type f 2>/dev/null | sort | head -200 || true
 
       - name: Upload APK
         if: success()
