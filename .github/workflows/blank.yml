@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flet==0.86.5 flet-android-notifications==0.10.0
 
-      - name: Generate Android project
+      - name: Build Flet Android project
         run: |
           flet build apk \
             --module-name notebook.py \
@@ -50,7 +50,6 @@ jobs:
           path = Path("build/flutter/android/app/build.gradle.kts")
           text = path.read_text()
 
-          # Enable core library desugaring.
           if "isCoreLibraryDesugaringEnabled = true" not in text:
               if "compileOptions {" not in text:
                   raise SystemExit("compileOptions block not found.")
@@ -61,7 +60,6 @@ jobs:
                   1,
               )
 
-          # Add desugaring library.
           if "coreLibraryDesugaring(" not in text:
               if "dependencies {" not in text:
                   raise SystemExit("dependencies block not found.")
@@ -75,19 +73,35 @@ jobs:
           path.write_text(text)
           PY
 
-          echo "===== DESUGARING CONFIGURATION ====="
-          grep -n -A5 -B3 "compileOptions" "$GRADLE_FILE" || true
-          grep -n "coreLibraryDesugaring" "$GRADLE_FILE" || true
-
-      - name: Set up Flutter PATH
+      - name: Set Flutter environment
         run: |
           echo "/home/runner/flutter/3.44.8/bin" >> "$GITHUB_PATH"
+
           export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
+
           flutter --version
+
+      - name: Set Serious Python environment
+        run: |
+          SITE_PACKAGES="$GITHUB_WORKSPACE/build/site-packages/arm64-v8a"
+
+          if [ ! -d "$SITE_PACKAGES" ]; then
+            echo "ERROR: Site-packages directory not found:"
+            echo "$SITE_PACKAGES"
+            echo "Searching for site-packages..."
+            find "$GITHUB_WORKSPACE/build" -maxdepth 4 -type d -name "site-packages" -print
+            exit 1
+          fi
+
+          echo "SERIOUS_PYTHON_SITE_PACKAGES=$SITE_PACKAGES" >> "$GITHUB_ENV"
+
+          echo "Using:"
+          echo "$SITE_PACKAGES"
 
       - name: Build APK
         run: |
           export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
+
           cd build/flutter
 
           flutter build apk \
