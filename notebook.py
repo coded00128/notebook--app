@@ -2,6 +2,7 @@ import flet as ft
 import json
 import os
 from datetime import datetime, timedelta
+
 from flet_android_notifications import FletAndroidNotifications
 
 
@@ -9,7 +10,6 @@ def main(page: ft.Page):
     page.title = "My Notebook"
     page.padding = 0
     page.spacing = 0
-    page.bgcolor = "#F5F8FF"
     page.theme_mode = ft.ThemeMode.LIGHT
 
     data_file = "notebook_data.json"
@@ -20,6 +20,7 @@ def main(page: ft.Page):
 
     notifications = FletAndroidNotifications()
 
+    # LIGHT THEME
     BLUE = "#2563EB"
     BLUE_DARK = "#1D4ED8"
     BLUE_LIGHT = "#EAF1FF"
@@ -37,7 +38,7 @@ def main(page: ft.Page):
     content = ft.Column(
         expand=True,
         scroll=ft.ScrollMode.AUTO,
-        spacing=0
+        spacing=0,
     )
 
     def load_data():
@@ -65,10 +66,10 @@ def main(page: ft.Page):
                     {
                         "user_name": user_name,
                         "tasks": tasks,
-                        "notes": notes
+                        "notes": notes,
                     },
                     file,
-                    indent=4
+                    indent=4,
                 )
         except Exception as error:
             print("Save error:", error)
@@ -81,7 +82,7 @@ def main(page: ft.Page):
             ft.SnackBar(
                 content=ft.Text(
                     message,
-                    weight=ft.FontWeight.W_600
+                    weight=ft.FontWeight.W_600,
                 )
             )
         )
@@ -92,7 +93,7 @@ def main(page: ft.Page):
                 title,
                 size=27,
                 weight=ft.FontWeight.BOLD,
-                color=TEXT
+                color=TEXT,
             )
         ]
 
@@ -102,24 +103,24 @@ def main(page: ft.Page):
                     subtitle,
                     size=13,
                     weight=ft.FontWeight.W_500,
-                    color=GREY
+                    color=GREY,
                 )
             )
 
         return ft.Column(
             controls=controls,
-            spacing=3
+            spacing=3,
         )
 
-    def make_card(child, padding=16, color=WHITE):
+    def make_card(child, padding=16, color=None):
         return ft.Container(
             content=child,
             padding=padding,
             margin=ft.Margin(bottom=10),
-            bgcolor=color,
+            bgcolor=color if color is not None else WHITE,
             border_radius=20,
             border=ft.Border.all(1, LIGHT_GREY),
-            width=float("inf")
+            width=float("inf"),
         )
 
     def ask_name():
@@ -127,7 +128,7 @@ def main(page: ft.Page):
             label="Your name",
             hint_text="Enter your name",
             autofocus=True,
-            border_radius=15
+            border_radius=15,
         )
 
         def save_name(e):
@@ -150,30 +151,32 @@ def main(page: ft.Page):
             modal=True,
             title=ft.Text(
                 "Welcome to My Notebook 👋",
-                weight=ft.FontWeight.BOLD
+                weight=ft.FontWeight.BOLD,
+                color=TEXT,
             ),
             content=ft.Column(
                 controls=[
                     ft.Text(
                         "Let's personalize your notebook.",
-                        weight=ft.FontWeight.W_500
+                        weight=ft.FontWeight.W_500,
+                        color=TEXT,
                     ),
-                    name_box
+                    name_box,
                 ],
                 tight=True,
-                spacing=12
+                spacing=12,
             ),
             actions=[
                 ft.Button(
                     content=ft.Text(
                         "Continue",
-                        weight=ft.FontWeight.BOLD
+                        weight=ft.FontWeight.BOLD,
                     ),
                     bgcolor=BLUE,
                     color=WHITE,
-                    on_click=save_name
+                    on_click=save_name,
                 )
-            ]
+            ],
         )
 
         page.show_dialog(dialog)
@@ -190,13 +193,13 @@ def main(page: ft.Page):
                         content=ft.Icon(
                             ft.Icons.MENU_BOOK_ROUNDED,
                             color=BLUE,
-                            size=31
+                            size=31,
                         ),
                         width=58,
                         height=58,
                         alignment=ft.Alignment.CENTER,
                         bgcolor=BLUE_LIGHT,
-                        border_radius=18
+                        border_radius=18,
                     ),
                     ft.Column(
                         controls=[
@@ -204,31 +207,31 @@ def main(page: ft.Page):
                                 f"Hello, {greeting} 👋",
                                 size=21,
                                 weight=ft.FontWeight.BOLD,
-                                color=TEXT
+                                color=TEXT,
                             ),
                             ft.Text(
                                 "Ready to get things done?",
                                 size=13,
                                 weight=ft.FontWeight.W_500,
-                                color=GREY
-                            )
+                                color=GREY,
+                            ),
                         ],
                         spacing=2,
-                        expand=True
+                        expand=True,
                     ),
                     ft.Container(
                         content=ft.IconButton(
                             icon=ft.Icons.SETTINGS_OUTLINED,
                             icon_color=TEXT,
-                            on_click=lambda e: show_settings()
+                            on_click=lambda e: show_settings(),
                         ),
                         bgcolor=WHITE,
-                        border_radius=15
-                    )
+                        border_radius=15,
+                    ),
                 ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
-            padding=18
+            padding=18,
         )
 
         content.controls.append(header)
@@ -240,22 +243,22 @@ def main(page: ft.Page):
                         str(len(tasks)),
                         size=30,
                         weight=ft.FontWeight.BOLD,
-                        color=BLUE
+                        color=BLUE,
                     ),
                     ft.Text(
                         "Tasks",
                         size=13,
                         weight=ft.FontWeight.W_600,
-                        color=GREY
-                    )
+                        color=GREY,
+                    ),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=2
+                spacing=2,
             ),
             expand=True,
             padding=18,
             bgcolor=BLUE_LIGHT,
-            border_radius=20
+            border_radius=20,
         )
 
         note_stat = ft.Container(
@@ -265,22 +268,22 @@ def main(page: ft.Page):
                         str(len(notes)),
                         size=30,
                         weight=ft.FontWeight.BOLD,
-                        color=BLUE_DARK
+                        color=BLUE_DARK,
                     ),
                     ft.Text(
                         "Notes",
                         size=13,
                         weight=ft.FontWeight.W_600,
-                        color=GREY
-                    )
+                        color=GREY,
+                    ),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=2
+                spacing=2,
             ),
             expand=True,
             padding=18,
             bgcolor=BLUE_SOFT,
-            border_radius=20
+            border_radius=20,
         )
 
         content.controls.append(
@@ -288,11 +291,11 @@ def main(page: ft.Page):
                 content=ft.Row(
                     controls=[
                         task_stat,
-                        note_stat
+                        note_stat,
                     ],
-                    spacing=12
+                    spacing=12,
                 ),
-                padding=18
+                padding=18,
             )
         )
 
@@ -304,7 +307,7 @@ def main(page: ft.Page):
                             "Quick actions",
                             size=19,
                             weight=ft.FontWeight.BOLD,
-                            color=TEXT
+                            color=TEXT,
                         ),
                         ft.Row(
                             controls=[
@@ -312,37 +315,37 @@ def main(page: ft.Page):
                                     content=ft.Button(
                                         content=ft.Text(
                                             "＋  Task",
-                                            weight=ft.FontWeight.BOLD
+                                            weight=ft.FontWeight.BOLD,
                                         ),
                                         expand=True,
                                         bgcolor=BLUE,
                                         color=WHITE,
                                         height=50,
-                                        on_click=show_create_task
+                                        on_click=show_create_task,
                                     ),
-                                    expand=True
+                                    expand=True,
                                 ),
                                 ft.Container(
                                     content=ft.Button(
                                         content=ft.Text(
                                             "📝  Note",
-                                            weight=ft.FontWeight.BOLD
+                                            weight=ft.FontWeight.BOLD,
                                         ),
                                         expand=True,
                                         bgcolor=WHITE,
                                         color=BLUE,
                                         height=50,
-                                        on_click=show_create_note
+                                        on_click=show_create_note,
                                     ),
-                                    expand=True
-                                )
+                                    expand=True,
+                                ),
                             ],
-                            spacing=10
-                        )
+                            spacing=10,
+                        ),
                     ],
-                    spacing=12
+                    spacing=12,
                 ),
-                padding=18
+                padding=18,
             )
         )
 
@@ -351,7 +354,7 @@ def main(page: ft.Page):
                 "Recent activity",
                 size=19,
                 weight=ft.FontWeight.BOLD,
-                color=TEXT
+                color=TEXT,
             )
         ]
 
@@ -366,26 +369,27 @@ def main(page: ft.Page):
                                 content=ft.Icon(
                                     ft.Icons.CHECK_ROUNDED,
                                     color=WHITE,
-                                    size=17
+                                    size=17,
                                 ),
                                 width=34,
                                 height=34,
                                 alignment=ft.Alignment.CENTER,
                                 bgcolor=BLUE,
-                                border_radius=11
+                                border_radius=11,
                             ),
                             ft.Text(
                                 task.get("text", ""),
                                 size=15,
                                 weight=ft.FontWeight.W_500,
+                                color=TEXT,
                                 expand=True,
                                 max_lines=2,
-                                overflow=ft.TextOverflow.ELLIPSIS
-                            )
+                                overflow=ft.TextOverflow.ELLIPSIS,
+                            ),
                         ],
-                        spacing=10
+                        spacing=10,
                     ),
-                    padding=12
+                    padding=12,
                 )
             )
 
@@ -398,26 +402,27 @@ def main(page: ft.Page):
                                 content=ft.Icon(
                                     ft.Icons.EDIT_NOTE_ROUNDED,
                                     color=BLUE,
-                                    size=20
+                                    size=20,
                                 ),
                                 width=34,
                                 height=34,
                                 alignment=ft.Alignment.CENTER,
                                 bgcolor=BLUE_LIGHT,
-                                border_radius=11
+                                border_radius=11,
                             ),
                             ft.Text(
                                 note.get("text", ""),
                                 size=15,
                                 weight=ft.FontWeight.W_500,
+                                color=TEXT,
                                 expand=True,
                                 max_lines=2,
-                                overflow=ft.TextOverflow.ELLIPSIS
-                            )
+                                overflow=ft.TextOverflow.ELLIPSIS,
+                            ),
                         ],
-                        spacing=10
+                        spacing=10,
                     ),
-                    padding=12
+                    padding=12,
                 )
             )
 
@@ -428,7 +433,7 @@ def main(page: ft.Page):
                 ft.Text(
                     "Nothing here yet. Start writing!",
                     color=GREY,
-                    weight=ft.FontWeight.W_500
+                    weight=ft.FontWeight.W_500,
                 )
             )
 
@@ -436,35 +441,26 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Column(
                     controls=recent_controls,
-                    spacing=5
+                    spacing=5,
                 ),
-                padding=18
+                padding=18,
             )
         )
 
         page.update()
-def parse_picker_date(value):
-    if value is None:
+
+    def parse_picker_date(value):
+        if value is None:
+            return None
+
+        if (
+            hasattr(value, "year")
+            and hasattr(value, "month")
+            and hasattr(value, "day")
+        ):
+            return value.year, value.month, value.day
+
         return None
-
-    if hasattr(value, "year") and hasattr(value, "month") and hasattr(value, "day"):
-        selected = datetime(
-            value.year,
-            value.month,
-            value.day
-        )
-
-        # Android/Flet DatePicker can return the selected
-        # date one day behind because of timezone conversion.
-        selected += timedelta(days=1)
-
-        return (
-            selected.year,
-            selected.month,
-            selected.day
-        )
-
-    return None
 
     def choose_reminder(task, after_save=None):
         current_reminder = task.get("reminder")
@@ -488,7 +484,7 @@ def parse_picker_date(value):
             ),
             size=14,
             weight=ft.FontWeight.W_600,
-            color=GREY
+            color=GREY,
         )
 
         def refresh_text():
@@ -519,15 +515,16 @@ def parse_picker_date(value):
                         hour = selected_datetime.hour
                         minute = selected_datetime.minute
                     else:
-                        hour = datetime.now().hour
-                        minute = datetime.now().minute
+                        now = datetime.now()
+                        hour = now.hour
+                        minute = now.minute
 
                     selected_datetime = datetime(
                         year,
                         month,
                         day,
                         hour,
-                        minute
+                        minute,
                     )
 
                     refresh_text()
@@ -536,14 +533,14 @@ def parse_picker_date(value):
                 first_date=datetime(
                     today.year,
                     today.month,
-                    today.day
+                    today.day,
                 ),
                 last_date=datetime(
                     today.year + 5,
                     12,
-                    31
+                    31,
                 ),
-                on_change=date_changed
+                on_change=date_changed,
             )
 
             page.show_dialog(picker)
@@ -567,7 +564,7 @@ def parse_picker_date(value):
                         selected_date.month,
                         selected_date.day,
                         value.hour,
-                        value.minute
+                        value.minute,
                     )
 
                     refresh_text()
@@ -593,12 +590,21 @@ def parse_picker_date(value):
 
             try:
                 await notifications.request_permissions()
-            except Exception:
-                pass
+            except Exception as error:
+                print(
+                    "Notification permission error:",
+                    error,
+                )
 
             try:
-                exact_allowed = await notifications.request_exact_alarm_permission()
-            except Exception:
+                exact_allowed = (
+                    await notifications.request_exact_alarm_permission()
+                )
+            except Exception as error:
+                print(
+                    "Exact alarm permission error:",
+                    error,
+                )
                 exact_allowed = False
 
             notification_id = (
@@ -612,7 +618,7 @@ def parse_picker_date(value):
                     title="📓 My Notebook Reminder",
                     body=task.get(
                         "text",
-                        "You have a task."
+                        "You have a task.",
                     ),
                     scheduled_time=selected_datetime,
                     importance="high",
@@ -623,7 +629,7 @@ def parse_picker_date(value):
                         if exact_allowed
                         else "inexact_allow_while_idle"
                     ),
-                    payload=str(notification_id)
+                    payload=str(notification_id),
                 )
 
                 task["reminder"] = selected_datetime.isoformat()
@@ -634,14 +640,21 @@ def parse_picker_date(value):
                 dialog.open = False
                 page.update()
 
-                show_message("🔔 Reminder set successfully!")
+                show_message(
+                    "🔔 Reminder set successfully!"
+                )
 
                 if after_save:
                     after_save()
 
             except Exception as error:
-                print("Notification error:", error)
+                print(
+                    "Notification scheduling error:",
+                    error,
+                )
 
+                # Keep the reminder in the task even if Android
+                # refuses to schedule the notification.
                 task["reminder"] = selected_datetime.isoformat()
                 task["notification_id"] = None
 
@@ -665,8 +678,11 @@ def parse_picker_date(value):
                     await notifications.cancel(
                         int(notification_id)
                     )
-                except Exception:
-                    pass
+                except Exception as error:
+                    print(
+                        "Notification cancel error:",
+                        error,
+                    )
 
             task["reminder"] = None
             task["notification_id"] = None
@@ -685,12 +701,13 @@ def parse_picker_date(value):
                 controls=[
                     ft.Icon(
                         ft.Icons.NOTIFICATIONS_ACTIVE_ROUNDED,
-                        color=BLUE
+                        color=BLUE,
                     ),
                     ft.Text(
                         "Task Reminder",
-                        weight=ft.FontWeight.BOLD
-                    )
+                        weight=ft.FontWeight.BOLD,
+                        color=TEXT,
+                    ),
                 ]
             ),
             content=ft.Column(
@@ -701,43 +718,43 @@ def parse_picker_date(value):
                             ft.Button(
                                 content=ft.Text(
                                     "Date",
-                                    weight=ft.FontWeight.BOLD
+                                    weight=ft.FontWeight.BOLD,
                                 ),
                                 icon=ft.Icons.CALENDAR_MONTH,
                                 on_click=open_date_picker,
-                                expand=True
+                                expand=True,
                             ),
                             ft.Button(
                                 content=ft.Text(
                                     "Time",
-                                    weight=ft.FontWeight.BOLD
+                                    weight=ft.FontWeight.BOLD,
                                 ),
                                 icon=ft.Icons.ACCESS_TIME,
                                 on_click=open_time_picker,
-                                expand=True
-                            )
+                                expand=True,
+                            ),
                         ],
-                        spacing=8
-                    )
+                        spacing=8,
+                    ),
                 ],
                 tight=True,
-                spacing=14
+                spacing=14,
             ),
             actions=[
                 ft.TextButton(
                     "Remove",
-                    on_click=remove_reminder
+                    on_click=remove_reminder,
                 ),
                 ft.Button(
                     content=ft.Text(
                         "Save Reminder",
-                        weight=ft.FontWeight.BOLD
+                        weight=ft.FontWeight.BOLD,
                     ),
                     bgcolor=BLUE,
                     color=WHITE,
-                    on_click=save_reminder
-                )
-            ]
+                    on_click=save_reminder,
+                ),
+            ],
         )
 
         page.show_dialog(dialog)
@@ -751,7 +768,7 @@ def parse_picker_date(value):
             multiline=True,
             min_lines=3,
             max_lines=6,
-            border_radius=15
+            border_radius=15,
         )
 
         category_box = ft.Dropdown(
@@ -762,8 +779,8 @@ def parse_picker_date(value):
                 ft.DropdownOption("School"),
                 ft.DropdownOption("Personal"),
                 ft.DropdownOption("Work"),
-                ft.DropdownOption("Ideas")
-            ]
+                ft.DropdownOption("Ideas"),
+            ],
         )
 
         priority_box = ft.Dropdown(
@@ -772,8 +789,8 @@ def parse_picker_date(value):
             options=[
                 ft.DropdownOption("High"),
                 ft.DropdownOption("Medium"),
-                ft.DropdownOption("Low")
-            ]
+                ft.DropdownOption("Low"),
+            ],
         )
 
         reminder_data = {
@@ -784,14 +801,15 @@ def parse_picker_date(value):
             "No reminder set",
             size=13,
             weight=ft.FontWeight.W_500,
-            color=GREY
+            color=GREY,
         )
 
         def update_reminder_label():
             selected = reminder_data["datetime"]
 
             reminder_label.value = (
-                "🔔 " + selected.strftime(
+                "🔔 "
+                + selected.strftime(
                     "%d %b %Y • %I:%M %p"
                 )
                 if selected
@@ -825,7 +843,7 @@ def parse_picker_date(value):
                         month,
                         day,
                         hour,
-                        minute
+                        minute,
                     )
 
                     update_reminder_label()
@@ -834,14 +852,14 @@ def parse_picker_date(value):
                 first_date=datetime(
                     today.year,
                     today.month,
-                    today.day
+                    today.day,
                 ),
                 last_date=datetime(
                     today.year + 5,
                     12,
-                    31
+                    31,
                 ),
-                on_change=changed
+                on_change=changed,
             )
 
             page.show_dialog(picker)
@@ -863,7 +881,7 @@ def parse_picker_date(value):
                         selected_date.month,
                         selected_date.day,
                         value.hour,
-                        value.minute
+                        value.minute,
                     )
 
                     update_reminder_label()
@@ -882,13 +900,18 @@ def parse_picker_date(value):
             text = (text_box.value or "").strip()
 
             if not text:
-                show_message("Please write a task first.")
+                show_message(
+                    "Please write a task first."
+                )
                 return
 
             reminder_dt = reminder_data["datetime"]
 
             if reminder_dt:
-                minimum_time = datetime.now() + timedelta(minutes=3)
+                minimum_time = (
+                    datetime.now()
+                    + timedelta(minutes=3)
+                )
 
                 if reminder_dt < minimum_time:
                     show_message(
@@ -899,15 +922,21 @@ def parse_picker_date(value):
             task = {
                 "text": text,
                 "completed": False,
-                "category": category_box.value or "General",
-                "priority": priority_box.value or "Medium",
+                "category": (
+                    category_box.value
+                    or "General"
+                ),
+                "priority": (
+                    priority_box.value
+                    or "Medium"
+                ),
                 "time": get_time(),
                 "reminder": (
                     reminder_dt.isoformat()
                     if reminder_dt
                     else None
                 ),
-                "notification_id": None
+                "notification_id": None,
             }
 
             tasks.insert(0, task)
@@ -915,12 +944,21 @@ def parse_picker_date(value):
             if reminder_dt:
                 try:
                     await notifications.request_permissions()
-                except Exception:
-                    pass
+                except Exception as error:
+                    print(
+                        "Notification permission error:",
+                        error,
+                    )
 
                 try:
-                    exact_allowed = await notifications.request_exact_alarm_permission()
-                except Exception:
+                    exact_allowed = (
+                        await notifications.request_exact_alarm_permission()
+                    )
+                except Exception as error:
+                    print(
+                        "Exact alarm permission error:",
+                        error,
+                    )
                     exact_allowed = False
 
                 notification_id = (
@@ -942,7 +980,7 @@ def parse_picker_date(value):
                             if exact_allowed
                             else "inexact_allow_while_idle"
                         ),
-                        payload=str(notification_id)
+                        payload=str(notification_id),
                     )
 
                     task["notification_id"] = notification_id
@@ -950,7 +988,7 @@ def parse_picker_date(value):
                 except Exception as error:
                     print(
                         "Notification scheduling error:",
-                        error
+                        error,
                     )
 
                     task["reminder"] = None
@@ -959,117 +997,119 @@ def parse_picker_date(value):
             save_data()
             show_tasks()
 
-        content.controls.extend([
-            ft.Container(
-                content=ft.Row(
-                    controls=[
-                        ft.IconButton(
-                            icon=ft.Icons.ARROW_BACK,
-                            on_click=lambda e: show_tasks()
-                        ),
-                        ft.Text(
-                            "NEW TASK",
-                            size=25,
-                            weight=ft.FontWeight.BOLD,
-                            color=TEXT
-                        )
-                    ]
+        content.controls.extend(
+            [
+                ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_BACK,
+                                on_click=lambda e: show_tasks(),
+                            ),
+                            ft.Text(
+                                "NEW TASK",
+                                size=25,
+                                weight=ft.FontWeight.BOLD,
+                                color=TEXT,
+                            ),
+                        ]
+                    ),
+                    padding=15,
                 ),
-                padding=15
-            ),
-            ft.Container(
-                content=ft.Column(
-                    controls=[
-                        text_box,
-                        category_box,
-                        priority_box,
-                        ft.Container(
-                            content=ft.Column(
-                                controls=[
-                                    ft.Row(
-                                        controls=[
-                                            ft.Container(
-                                                content=ft.Icon(
-                                                    ft.Icons.NOTIFICATIONS_ACTIVE_ROUNDED,
-                                                    color=BLUE
-                                                ),
-                                                width=44,
-                                                height=44,
-                                                alignment=ft.Alignment.CENTER,
-                                                bgcolor=BLUE_LIGHT,
-                                                border_radius=13
-                                            ),
-                                            ft.Column(
-                                                controls=[
-                                                    ft.Text(
-                                                        "Reminder",
-                                                        size=17,
-                                                        weight=ft.FontWeight.BOLD,
-                                                        color=TEXT
+                ft.Container(
+                    content=ft.Column(
+                        controls=[
+                            text_box,
+                            category_box,
+                            priority_box,
+                            ft.Container(
+                                content=ft.Column(
+                                    controls=[
+                                        ft.Row(
+                                            controls=[
+                                                ft.Container(
+                                                    content=ft.Icon(
+                                                        ft.Icons.NOTIFICATIONS_ACTIVE_ROUNDED,
+                                                        color=BLUE,
                                                     ),
-                                                    reminder_label
-                                                ],
-                                                spacing=2,
-                                                expand=True
-                                            )
-                                        ],
-                                        spacing=10
-                                    ),
-                                    ft.Row(
-                                        controls=[
-                                            ft.Button(
-                                                content=ft.Text(
-                                                    "Choose date",
-                                                    weight=ft.FontWeight.BOLD
+                                                    width=44,
+                                                    height=44,
+                                                    alignment=ft.Alignment.CENTER,
+                                                    bgcolor=BLUE_LIGHT,
+                                                    border_radius=13,
                                                 ),
-                                                icon=ft.Icons.CALENDAR_MONTH,
-                                                on_click=choose_date,
-                                                expand=True
-                                            ),
-                                            ft.Button(
-                                                content=ft.Text(
-                                                    "Choose time",
-                                                    weight=ft.FontWeight.BOLD
+                                                ft.Column(
+                                                    controls=[
+                                                        ft.Text(
+                                                            "Reminder",
+                                                            size=17,
+                                                            weight=ft.FontWeight.BOLD,
+                                                            color=TEXT,
+                                                        ),
+                                                        reminder_label,
+                                                    ],
+                                                    spacing=2,
+                                                    expand=True,
                                                 ),
-                                                icon=ft.Icons.ACCESS_TIME,
-                                                on_click=choose_time,
-                                                expand=True
-                                            )
-                                        ],
-                                        spacing=8
-                                    ),
-                                    ft.TextButton(
-                                        "Remove reminder",
-                                        on_click=clear_reminder
-                                    )
-                                ],
-                                spacing=10
+                                            ],
+                                            spacing=10,
+                                        ),
+                                        ft.Row(
+                                            controls=[
+                                                ft.Button(
+                                                    content=ft.Text(
+                                                        "Choose date",
+                                                        weight=ft.FontWeight.BOLD,
+                                                    ),
+                                                    icon=ft.Icons.CALENDAR_MONTH,
+                                                    on_click=choose_date,
+                                                    expand=True,
+                                                ),
+                                                ft.Button(
+                                                    content=ft.Text(
+                                                        "Choose time",
+                                                        weight=ft.FontWeight.BOLD,
+                                                    ),
+                                                    icon=ft.Icons.ACCESS_TIME,
+                                                    on_click=choose_time,
+                                                    expand=True,
+                                                ),
+                                            ],
+                                            spacing=8,
+                                        ),
+                                        ft.TextButton(
+                                            "Remove reminder",
+                                            on_click=clear_reminder,
+                                        ),
+                                    ],
+                                    spacing=10,
+                                ),
+                                padding=16,
+                                bgcolor=BLUE_SOFT,
+                                border_radius=18,
+                                border=ft.Border.all(
+                                    1,
+                                    LIGHT_GREY,
+                                ),
                             ),
-                            padding=16,
-                            bgcolor=BLUE_SOFT,
-                            border_radius=18,
-                            border=ft.Border.all(
-                                1,
-                                LIGHT_GREY
-                            )
-                        ),
-                        ft.Button(
-                            content=ft.Text(
-                                "Save Task",
-                                weight=ft.FontWeight.BOLD
+                            ft.Button(
+                                content=ft.Text(
+                                    "Save Task",
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                                icon=ft.Icons.SAVE_ROUNDED,
+                                height=52,
+                                bgcolor=BLUE,
+                                color=WHITE,
+                                on_click=save_task,
                             ),
-                            icon=ft.Icons.SAVE_ROUNDED,
-                            height=52,
-                            bgcolor=BLUE,
-                            color=WHITE,
-                            on_click=save_task
-                        )
-                    ],
-                    spacing=14
+                        ],
+                        spacing=14,
+                    ),
+                    padding=18,
                 ),
-                padding=18
-            )
-        ])
+            ]
+        )
 
         page.update()
 
@@ -1087,27 +1127,29 @@ def parse_picker_date(value):
             modal=True,
             title=ft.Text(
                 title,
-                weight=ft.FontWeight.BOLD
+                weight=ft.FontWeight.BOLD,
+                color=TEXT,
             ),
             content=ft.Text(
                 message,
-                weight=ft.FontWeight.W_500
+                weight=ft.FontWeight.W_500,
+                color=TEXT,
             ),
             actions=[
                 ft.TextButton(
                     "Cancel",
-                    on_click=cancel
+                    on_click=cancel,
                 ),
                 ft.Button(
                     content=ft.Text(
                         "Delete",
-                        weight=ft.FontWeight.BOLD
+                        weight=ft.FontWeight.BOLD,
                     ),
                     bgcolor=RED,
                     color=WHITE,
-                    on_click=confirm
-                )
-            ]
+                    on_click=confirm,
+                ),
+            ],
         )
 
         page.show_dialog(dialog)
@@ -1123,19 +1165,19 @@ def parse_picker_date(value):
             color=TEXT,
             expand=True,
             max_lines=5,
-            overflow=ft.TextOverflow.ELLIPSIS
+            overflow=ft.TextOverflow.ELLIPSIS,
         )
 
         if completed:
             task_text.style = ft.TextStyle(
                 decoration=ft.TextDecoration.LINE_THROUGH,
-                color=GREY
+                color=GREY,
             )
 
         def mark(e):
             task["completed"] = not task.get(
                 "completed",
-                False
+                False,
             )
 
             save_data()
@@ -1147,14 +1189,18 @@ def parse_picker_date(value):
                 multiline=True,
                 min_lines=3,
                 max_lines=6,
-                border_radius=15
+                border_radius=15,
             )
 
             def save_edit(e):
-                new_text = (edit_box.value or "").strip()
+                new_text = (
+                    edit_box.value or ""
+                ).strip()
 
                 if not new_text:
-                    show_message("Task cannot be empty.")
+                    show_message(
+                        "Task cannot be empty."
+                    )
                     return
 
                 task["text"] = new_text
@@ -1172,38 +1218,44 @@ def parse_picker_date(value):
                 modal=True,
                 title=ft.Text(
                     "Edit Task",
-                    weight=ft.FontWeight.BOLD
+                    weight=ft.FontWeight.BOLD,
+                    color=TEXT,
                 ),
                 content=edit_box,
                 actions=[
                     ft.TextButton(
                         "Cancel",
-                        on_click=close
+                        on_click=close,
                     ),
                     ft.Button(
                         content=ft.Text(
                             "Save",
-                            weight=ft.FontWeight.BOLD
+                            weight=ft.FontWeight.BOLD,
                         ),
                         bgcolor=BLUE,
                         color=WHITE,
-                        on_click=save_edit
-                    )
-                ]
+                        on_click=save_edit,
+                    ),
+                ],
             )
 
             page.show_dialog(dialog)
 
         async def actually_delete():
-            notification_id = task.get("notification_id")
+            notification_id = task.get(
+                "notification_id"
+            )
 
             if notification_id:
                 try:
                     await notifications.cancel(
                         int(notification_id)
                     )
-                except Exception:
-                    pass
+                except Exception as error:
+                    print(
+                        "Notification cancel error:",
+                        error,
+                    )
 
             if task in tasks:
                 tasks.remove(task)
@@ -1213,24 +1265,26 @@ def parse_picker_date(value):
 
         def delete():
             def run_delete():
-                page.run_task(actually_delete)
+                page.run_task(
+                    actually_delete
+                )
 
             delete_confirm(
                 "Delete Task?",
                 "This task will be permanently deleted.",
-                run_delete
+                run_delete,
             )
 
         gesture_text = ft.GestureDetector(
             content=task_text,
             on_double_tap=lambda e: edit(),
-            on_long_press=lambda e: delete()
+            on_long_press=lambda e: delete(),
         )
 
         def reminder_button(e):
             choose_reminder(
                 task,
-                after_save=show_tasks
+                after_save=show_tasks,
             )
 
         notification_button = ft.Container(
@@ -1240,14 +1294,18 @@ def parse_picker_date(value):
                     if reminder
                     else ft.Icons.NOTIFICATIONS_NONE_OUTLINED
                 ),
-                icon_color=BLUE if reminder else GREY,
+                icon_color=(
+                    BLUE
+                    if reminder
+                    else GREY
+                ),
                 icon_size=22,
                 tooltip=(
                     "Change reminder"
                     if reminder
                     else "Set reminder"
                 ),
-                on_click=reminder_button
+                on_click=reminder_button,
             ),
             width=45,
             height=45,
@@ -1257,21 +1315,25 @@ def parse_picker_date(value):
                 if reminder
                 else "#EEF1F6"
             ),
-            border_radius=14
+            border_radius=14,
         )
 
         reminder_label = None
 
         if reminder:
             try:
-                reminder_dt = datetime.fromisoformat(reminder)
+                reminder_dt = (
+                    datetime.fromisoformat(
+                        reminder
+                    )
+                )
 
                 reminder_label = ft.Row(
                     controls=[
                         ft.Icon(
                             ft.Icons.ACCESS_TIME,
                             size=14,
-                            color=BLUE
+                            color=BLUE,
                         ),
                         ft.Text(
                             reminder_dt.strftime(
@@ -1279,10 +1341,10 @@ def parse_picker_date(value):
                             ),
                             size=11,
                             weight=ft.FontWeight.W_500,
-                            color=GREY
-                        )
+                            color=GREY,
+                        ),
                     ],
-                    spacing=4
+                    spacing=4,
                 )
             except Exception:
                 reminder_label = None
@@ -1293,13 +1355,13 @@ def parse_picker_date(value):
                 f"{task.get('priority', 'Medium')}",
                 size=11,
                 weight=ft.FontWeight.W_500,
-                color=GREY
+                color=GREY,
             ),
             ft.Text(
                 task.get("time", ""),
                 size=10,
-                color=GREY
-            )
+                color=GREY,
+            ),
         ]
 
         if reminder_label:
@@ -1322,15 +1384,15 @@ def parse_picker_date(value):
                                 else GREY
                             ),
                             tooltip="Mark complete",
-                            on_click=mark
-                        )
+                            on_click=mark,
+                        ),
                     ],
-                    vertical_alignment=ft.CrossAxisAlignment.START
+                    vertical_alignment=ft.CrossAxisAlignment.START,
                 ),
-                *details
+                *details,
             ],
             spacing=5,
-            expand=True
+            expand=True,
         )
 
         content.controls.append(
@@ -1338,10 +1400,10 @@ def parse_picker_date(value):
                 content=ft.Row(
                     controls=[
                         notification_button,
-                        task_body
+                        task_body,
                     ],
                     spacing=10,
-                    vertical_alignment=ft.CrossAxisAlignment.START
+                    vertical_alignment=ft.CrossAxisAlignment.START,
                 ),
                 padding=14,
                 margin=ft.Margin(bottom=10),
@@ -1349,9 +1411,9 @@ def parse_picker_date(value):
                 border_radius=20,
                 border=ft.Border.all(
                     1,
-                    LIGHT_GREY
+                    LIGHT_GREY,
                 ),
-                width=float("inf")
+                width=float("inf"),
             )
         )
 
@@ -1364,25 +1426,25 @@ def parse_picker_date(value):
                     controls=[
                         section_title(
                             "My Tasks",
-                            f"{len(tasks)} saved task(s)"
+                            f"{len(tasks)} saved task(s)",
                         ),
                         ft.Container(
                             content=ft.IconButton(
                                 icon=ft.Icons.ADD,
                                 icon_color=WHITE,
                                 icon_size=25,
-                                on_click=show_create_task
+                                on_click=show_create_task,
                             ),
                             width=48,
                             height=48,
                             alignment=ft.Alignment.CENTER,
                             bgcolor=BLUE,
-                            border_radius=15
-                        )
+                            border_radius=15,
+                        ),
                     ],
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
-                padding=18
+                padding=18,
             )
         )
 
@@ -1395,36 +1457,42 @@ def parse_picker_date(value):
                                 content=ft.Icon(
                                     ft.Icons.CHECKLIST_ROUNDED,
                                     size=45,
-                                    color=BLUE
+                                    color=BLUE,
                                 ),
                                 width=80,
                                 height=80,
                                 alignment=ft.Alignment.CENTER,
                                 bgcolor=BLUE_LIGHT,
-                                border_radius=25
+                                border_radius=25,
                             ),
                             ft.Text(
                                 "No tasks yet",
                                 size=20,
                                 weight=ft.FontWeight.BOLD,
-                                color=TEXT
+                                color=TEXT,
                             ),
                             ft.Text(
                                 "Tap + to add your first task.",
                                 color=GREY,
-                                weight=ft.FontWeight.W_500
-                            )
+                                weight=ft.FontWeight.W_500,
+                            ),
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=8
+                        spacing=8,
                     ),
                     padding=40,
-                    alignment=ft.Alignment.CENTER
+                    alignment=ft.Alignment.CENTER,
                 )
             )
         else:
-            for number, task in enumerate(tasks, start=1):
-                make_task_card(number, task)
+            for number, task in enumerate(
+                tasks,
+                start=1,
+            ):
+                make_task_card(
+                    number,
+                    task,
+                )
 
         page.update()
 
@@ -1437,7 +1505,7 @@ def parse_picker_date(value):
             multiline=True,
             min_lines=8,
             max_lines=15,
-            border_radius=15
+            border_radius=15,
         )
 
         category_box = ft.Dropdown(
@@ -1448,69 +1516,78 @@ def parse_picker_date(value):
                 ft.DropdownOption("School"),
                 ft.DropdownOption("Personal"),
                 ft.DropdownOption("Work"),
-                ft.DropdownOption("Ideas")
-            ]
+                ft.DropdownOption("Ideas"),
+            ],
         )
 
         def save_note(e):
-            text = (text_box.value or "").strip()
+            text = (
+                text_box.value or ""
+            ).strip()
 
             if not text:
-                show_message("Please write a note first.")
+                show_message(
+                    "Please write a note first."
+                )
                 return
 
             notes.insert(
                 0,
                 {
                     "text": text,
-                    "category": category_box.value or "General",
-                    "time": get_time()
-                }
+                    "category": (
+                        category_box.value
+                        or "General"
+                    ),
+                    "time": get_time(),
+                },
             )
 
             save_data()
             show_notes()
 
-        content.controls.extend([
-            ft.Container(
-                content=ft.Row(
-                    controls=[
-                        ft.IconButton(
-                            icon=ft.Icons.ARROW_BACK,
-                            on_click=lambda e: show_notes()
-                        ),
-                        ft.Text(
-                            "NEW NOTE",
-                            size=25,
-                            weight=ft.FontWeight.BOLD,
-                            color=TEXT
-                        )
-                    ]
-                ),
-                padding=15
-            ),
-            ft.Container(
-                content=ft.Column(
-                    controls=[
-                        text_box,
-                        category_box,
-                        ft.Button(
-                            content=ft.Text(
-                                "Save Note",
-                                weight=ft.FontWeight.BOLD
+        content.controls.extend(
+            [
+                ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_BACK,
+                                on_click=lambda e: show_notes(),
                             ),
-                            icon=ft.Icons.SAVE_ROUNDED,
-                            height=52,
-                            bgcolor=BLUE,
-                            color=WHITE,
-                            on_click=save_note
-                        )
-                    ],
-                    spacing=14
+                            ft.Text(
+                                "NEW NOTE",
+                                size=25,
+                                weight=ft.FontWeight.BOLD,
+                                color=TEXT,
+                            ),
+                        ]
+                    ),
+                    padding=15,
                 ),
-                padding=18
-            )
-        ])
+                ft.Container(
+                    content=ft.Column(
+                        controls=[
+                            text_box,
+                            category_box,
+                            ft.Button(
+                                content=ft.Text(
+                                    "Save Note",
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                                icon=ft.Icons.SAVE_ROUNDED,
+                                height=52,
+                                bgcolor=BLUE,
+                                color=WHITE,
+                                on_click=save_note,
+                            ),
+                        ],
+                        spacing=14,
+                    ),
+                    padding=18,
+                ),
+            ]
+        )
 
         page.update()
 
@@ -1522,7 +1599,7 @@ def parse_picker_date(value):
             color=TEXT,
             expand=True,
             max_lines=7,
-            overflow=ft.TextOverflow.ELLIPSIS
+            overflow=ft.TextOverflow.ELLIPSIS,
         )
 
         def edit():
@@ -1531,14 +1608,18 @@ def parse_picker_date(value):
                 multiline=True,
                 min_lines=5,
                 max_lines=10,
-                border_radius=15
+                border_radius=15,
             )
 
             def save_edit(e):
-                new_text = (edit_box.value or "").strip()
+                new_text = (
+                    edit_box.value or ""
+                ).strip()
 
                 if not new_text:
-                    show_message("Note cannot be empty.")
+                    show_message(
+                        "Note cannot be empty."
+                    )
                     return
 
                 note["text"] = new_text
@@ -1556,24 +1637,25 @@ def parse_picker_date(value):
                 modal=True,
                 title=ft.Text(
                     "Edit Note",
-                    weight=ft.FontWeight.BOLD
+                    weight=ft.FontWeight.BOLD,
+                    color=TEXT,
                 ),
                 content=edit_box,
                 actions=[
                     ft.TextButton(
                         "Cancel",
-                        on_click=close
+                        on_click=close,
                     ),
                     ft.Button(
                         content=ft.Text(
                             "Save",
-                            weight=ft.FontWeight.BOLD
+                            weight=ft.FontWeight.BOLD,
                         ),
                         bgcolor=BLUE,
                         color=WHITE,
-                        on_click=save_edit
-                    )
-                ]
+                        on_click=save_edit,
+                    ),
+                ],
             )
 
             page.show_dialog(dialog)
@@ -1589,13 +1671,13 @@ def parse_picker_date(value):
             delete_confirm(
                 "Delete Note?",
                 "This note will be permanently deleted.",
-                remove
+                remove,
             )
 
         gesture_text = ft.GestureDetector(
             content=text,
             on_double_tap=lambda e: edit(),
-            on_long_press=lambda e: delete()
+            on_long_press=lambda e: delete(),
         )
 
         content.controls.append(
@@ -1604,18 +1686,21 @@ def parse_picker_date(value):
                     controls=[
                         gesture_text,
                         ft.Text(
-                            note.get("category", "General"),
+                            note.get(
+                                "category",
+                                "General",
+                            ),
                             size=11,
                             weight=ft.FontWeight.W_500,
-                            color=GREY
+                            color=GREY,
                         ),
                         ft.Text(
                             note.get("time", ""),
                             size=10,
-                            color=GREY
-                        )
+                            color=GREY,
+                        ),
                     ],
-                    spacing=5
+                    spacing=5,
                 ),
                 padding=14,
                 margin=ft.Margin(bottom=10),
@@ -1623,9 +1708,9 @@ def parse_picker_date(value):
                 border_radius=20,
                 border=ft.Border.all(
                     1,
-                    LIGHT_GREY
+                    LIGHT_GREY,
                 ),
-                width=float("inf")
+                width=float("inf"),
             )
         )
 
@@ -1638,25 +1723,25 @@ def parse_picker_date(value):
                     controls=[
                         section_title(
                             "My Notes",
-                            f"{len(notes)} saved note(s)"
+                            f"{len(notes)} saved note(s)",
                         ),
                         ft.Container(
                             content=ft.IconButton(
                                 icon=ft.Icons.ADD,
                                 icon_color=WHITE,
                                 icon_size=25,
-                                on_click=show_create_note
+                                on_click=show_create_note,
                             ),
                             width=48,
                             height=48,
                             alignment=ft.Alignment.CENTER,
                             bgcolor=BLUE,
-                            border_radius=15
-                        )
+                            border_radius=15,
+                        ),
                     ],
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
                 ),
-                padding=18
+                padding=18,
             )
         )
 
@@ -1669,36 +1754,42 @@ def parse_picker_date(value):
                                 content=ft.Icon(
                                     ft.Icons.EDIT_NOTE_ROUNDED,
                                     color=BLUE,
-                                    size=40
+                                    size=40,
                                 ),
                                 width=80,
                                 height=80,
                                 alignment=ft.Alignment.CENTER,
                                 bgcolor=BLUE_LIGHT,
-                                border_radius=25
+                                border_radius=25,
                             ),
                             ft.Text(
                                 "No notes yet",
                                 size=20,
                                 weight=ft.FontWeight.BOLD,
-                                color=TEXT
+                                color=TEXT,
                             ),
                             ft.Text(
                                 "Tap + to write something.",
                                 color=GREY,
-                                weight=ft.FontWeight.W_500
-                            )
+                                weight=ft.FontWeight.W_500,
+                            ),
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=8
+                        spacing=8,
                     ),
                     padding=40,
-                    alignment=ft.Alignment.CENTER
+                    alignment=ft.Alignment.CENTER,
                 )
             )
         else:
-            for number, note in enumerate(notes, start=1):
-                make_note_card(number, note)
+            for number, note in enumerate(
+                notes,
+                start=1,
+            ):
+                make_note_card(
+                    number,
+                    note,
+                )
 
         page.update()
 
@@ -1708,7 +1799,7 @@ def parse_picker_date(value):
         search = ft.TextField(
             hint_text="Search your notebook...",
             prefix_icon=ft.Icons.SEARCH,
-            border_radius=15
+            border_radius=15,
         )
 
         results = ft.Column(spacing=8)
@@ -1716,7 +1807,9 @@ def parse_picker_date(value):
         def perform_search(e):
             results.controls.clear()
 
-            query = (search.value or "").lower().strip()
+            query = (
+                search.value or ""
+            ).lower().strip()
 
             if not query:
                 page.update()
@@ -1724,8 +1817,14 @@ def parse_picker_date(value):
 
             found = False
 
-            for number, task in enumerate(tasks, start=1):
-                if query in task.get("text", "").lower():
+            for number, task in enumerate(
+                tasks,
+                start=1,
+            ):
+                if query in task.get(
+                    "text",
+                    "",
+                ).lower():
                     found = True
 
                     results.controls.append(
@@ -1734,21 +1833,29 @@ def parse_picker_date(value):
                                 controls=[
                                     ft.Icon(
                                         ft.Icons.CHECK_CIRCLE_OUTLINE,
-                                        color=BLUE
+                                        color=BLUE,
                                     ),
                                     ft.Text(
-                                        f"Task {number}: {task.get('text', '')}",
+                                        f"Task {number}: "
+                                        f"{task.get('text', '')}",
                                         expand=True,
-                                        weight=ft.FontWeight.W_500
-                                    )
+                                        weight=ft.FontWeight.W_500,
+                                        color=TEXT,
+                                    ),
                                 ]
                             ),
-                            padding=13
+                            padding=13,
                         )
                     )
 
-            for number, note in enumerate(notes, start=1):
-                if query in note.get("text", "").lower():
+            for number, note in enumerate(
+                notes,
+                start=1,
+            ):
+                if query in note.get(
+                    "text",
+                    "",
+                ).lower():
                     found = True
 
                     results.controls.append(
@@ -1757,16 +1864,18 @@ def parse_picker_date(value):
                                 controls=[
                                     ft.Icon(
                                         ft.Icons.EDIT_NOTE_ROUNDED,
-                                        color=BLUE
+                                        color=BLUE,
                                     ),
                                     ft.Text(
-                                        f"Note {number}: {note.get('text', '')}",
+                                        f"Note {number}: "
+                                        f"{note.get('text', '')}",
                                         expand=True,
-                                        weight=ft.FontWeight.W_500
-                                    )
+                                        weight=ft.FontWeight.W_500,
+                                        color=TEXT,
+                                    ),
                                 ]
                             ),
-                            padding=13
+                            padding=13,
                         )
                     )
 
@@ -1775,7 +1884,7 @@ def parse_picker_date(value):
                     ft.Text(
                         "Nothing found.",
                         color=GREY,
-                        weight=ft.FontWeight.W_500
+                        weight=ft.FontWeight.W_500,
                     )
                 )
 
@@ -1783,23 +1892,25 @@ def parse_picker_date(value):
 
         search.on_change = perform_search
 
-        content.controls.extend([
-            ft.Container(
-                content=section_title(
-                    "Search",
-                    "Find anything you've saved."
+        content.controls.extend(
+            [
+                ft.Container(
+                    content=section_title(
+                        "Search",
+                        "Find anything you've saved.",
+                    ),
+                    padding=18,
                 ),
-                padding=18
-            ),
-            ft.Container(
-                content=search,
-                padding=18
-            ),
-            ft.Container(
-                content=results,
-                padding=18
-            )
-        ])
+                ft.Container(
+                    content=search,
+                    padding=18,
+                ),
+                ft.Container(
+                    content=results,
+                    padding=18,
+                ),
+            ]
+        )
 
         page.update()
 
@@ -1808,21 +1919,51 @@ def parse_picker_date(value):
 
         theme_switch = ft.Switch(
             label="Dark mode",
-            value=page.theme_mode == ft.ThemeMode.DARK
+            value=page.theme_mode == ft.ThemeMode.DARK,
         )
 
         def change_theme(e):
-            page.theme_mode = (
-                ft.ThemeMode.DARK
-                if theme_switch.value
-                else ft.ThemeMode.LIGHT
+            nonlocal (
+                BLUE_LIGHT,
+                BLUE_SOFT,
+                WHITE,
+                BACKGROUND,
+                TEXT,
+                GREY,
+                LIGHT_GREY,
+                RED_LIGHT,
             )
-            page.bgcolor = (
-                "#101827"
-                if theme_switch.value
-                else BACKGROUND
-            )
-            page.update()
+
+            if theme_switch.value:
+                # DARK MODE PALETTE
+                BLUE_LIGHT = "#172554"
+                BLUE_SOFT = "#172033"
+                WHITE = "#182233"
+                BACKGROUND = "#0F172A"
+                TEXT = "#F8FAFC"
+                GREY = "#CBD5E1"
+                LIGHT_GREY = "#334155"
+                RED_LIGHT = "#451A1A"
+
+                page.theme_mode = ft.ThemeMode.DARK
+                page.bgcolor = BACKGROUND
+            else:
+                # LIGHT MODE PALETTE
+                BLUE_LIGHT = "#EAF1FF"
+                BLUE_SOFT = "#F3F6FF"
+                WHITE = "#FFFFFF"
+                BACKGROUND = "#F5F8FF"
+                TEXT = "#172033"
+                GREY = "#657083"
+                LIGHT_GREY = "#DCE3F0"
+                RED_LIGHT = "#FEECEC"
+
+                page.theme_mode = ft.ThemeMode.LIGHT
+                page.bgcolor = BACKGROUND
+
+            # Rebuild the page so every explicit text/card color
+            # changes immediately instead of remaining faded.
+            show_settings()
 
         theme_switch.on_change = change_theme
 
@@ -1839,7 +1980,7 @@ def parse_picker_date(value):
             delete_confirm(
                 "Clear Everything?",
                 "All tasks and notes will be permanently deleted.",
-                remove_all
+                remove_all,
             )
 
         premium_card = ft.Container(
@@ -1851,13 +1992,13 @@ def parse_picker_date(value):
                                 content=ft.Icon(
                                     ft.Icons.STAR_ROUNDED,
                                     color=BLUE,
-                                    size=25
+                                    size=25,
                                 ),
                                 width=45,
                                 height=45,
                                 alignment=ft.Alignment.CENTER,
                                 bgcolor=BLUE_LIGHT,
-                                border_radius=13
+                                border_radius=13,
                             ),
                             ft.Column(
                                 controls=[
@@ -1865,25 +2006,25 @@ def parse_picker_date(value):
                                         "Notebook Premium",
                                         size=18,
                                         weight=ft.FontWeight.BOLD,
-                                        color=TEXT
+                                        color=TEXT,
                                     ),
                                     ft.Text(
                                         "₦500 / month",
                                         size=13,
                                         weight=ft.FontWeight.W_500,
-                                        color=GREY
-                                    )
+                                        color=GREY,
+                                    ),
                                 ],
                                 spacing=2,
-                                expand=True
-                            )
+                                expand=True,
+                            ),
                         ]
                     ),
                     ft.Divider(),
                     ft.Text(
                         "Premium features",
                         weight=ft.FontWeight.BOLD,
-                        color=TEXT
+                        color=TEXT,
                     ),
                     ft.Text(
                         "• Advanced reminders\n"
@@ -1891,142 +2032,147 @@ def parse_picker_date(value):
                         "• Premium notebook tools\n"
                         "• More productivity features",
                         weight=ft.FontWeight.W_500,
-                        color=TEXT
+                        color=TEXT,
                     ),
                     ft.Button(
                         content=ft.Text(
                             "View Premium",
-                            weight=ft.FontWeight.BOLD
+                            weight=ft.FontWeight.BOLD,
                         ),
                         icon=ft.Icons.STAR_OUTLINE,
                         bgcolor=BLUE,
                         color=WHITE,
-                        on_click=lambda e: show_premium()
-                    )
+                        on_click=lambda e: show_premium(),
+                    ),
                 ],
-                spacing=8
+                spacing=8,
             ),
             padding=17,
             bgcolor=BLUE_SOFT,
             border_radius=18,
             border=ft.Border.all(
                 1,
-                LIGHT_GREY
-            )
+                LIGHT_GREY,
+            ),
         )
 
-        content.controls.extend([
-            ft.Container(
-                content=section_title(
-                    "Settings",
-                    "Make Notebook feel like yours."
+        content.controls.extend(
+            [
+                ft.Container(
+                    content=section_title(
+                        "Settings",
+                        "Make Notebook feel like yours.",
+                    ),
+                    padding=18,
                 ),
-                padding=18
-            ),
-            ft.Container(
-                content=ft.Row(
-                    controls=[
-                        ft.Container(
-                            content=ft.Icon(
-                                ft.Icons.PERSON_OUTLINE,
-                                color=BLUE
+                ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.Container(
+                                content=ft.Icon(
+                                    ft.Icons.PERSON_OUTLINE,
+                                    color=BLUE,
+                                ),
+                                width=42,
+                                height=42,
+                                alignment=ft.Alignment.CENTER,
+                                bgcolor=BLUE_LIGHT,
+                                border_radius=13,
                             ),
-                            width=42,
-                            height=42,
-                            alignment=ft.Alignment.CENTER,
-                            bgcolor=BLUE_LIGHT,
-                            border_radius=13
-                        ),
-                        ft.Text(
-                            user_name
-                            if user_name
-                            else "Set your name",
-                            weight=ft.FontWeight.W_600,
-                            color=TEXT,
-                            expand=True
-                        ),
-                        ft.IconButton(
-                            icon=ft.Icons.EDIT_OUTLINED,
-                            on_click=change_name
-                        )
-                    ],
-                    spacing=10
-                ),
-                padding=15,
-                margin=ft.Margin(
-                    left=18,
-                    right=18,
-                    bottom=12
-                ),
-                bgcolor=WHITE,
-                border_radius=18,
-                border=ft.Border.all(
-                    1,
-                    LIGHT_GREY
-                )
-            ),
-            ft.Container(
-                content=theme_switch,
-                padding=14,
-                margin=ft.Margin(
-                    left=18,
-                    right=18,
-                    bottom=12
-                ),
-                bgcolor=WHITE,
-                border_radius=18,
-                border=ft.Border.all(
-                    1,
-                    LIGHT_GREY
-                )
-            ),
-            ft.Container(
-                content=premium_card,
-                padding=18
-            ),
-            ft.Container(
-                content=ft.Column(
-                    controls=[
-                        ft.Text(
-                            "Storage",
-                            size=18,
-                            weight=ft.FontWeight.BOLD,
-                            color=TEXT
-                        ),
-                        ft.Text(
-                            f"{len(tasks)} tasks • {len(notes)} notes",
-                            color=GREY,
-                            weight=ft.FontWeight.W_500
-                        ),
-                        ft.Button(
-                            content=ft.Text(
-                                "Clear All Data",
-                                weight=ft.FontWeight.BOLD
+                            ft.Text(
+                                user_name
+                                if user_name
+                                else "Set your name",
+                                weight=ft.FontWeight.W_600,
+                                color=TEXT,
+                                expand=True,
                             ),
-                            icon=ft.Icons.DELETE_FOREVER,
-                            bgcolor=RED,
-                            color=WHITE,
-                            on_click=clear_all
-                        )
-                    ],
-                    spacing=8
+                            ft.IconButton(
+                                icon=ft.Icons.EDIT_OUTLINED,
+                                icon_color=TEXT,
+                                on_click=change_name,
+                            ),
+                        ],
+                        spacing=10,
+                    ),
+                    padding=15,
+                    margin=ft.Margin(
+                        left=18,
+                        right=18,
+                        bottom=12,
+                    ),
+                    bgcolor=WHITE,
+                    border_radius=18,
+                    border=ft.Border.all(
+                        1,
+                        LIGHT_GREY,
+                    ),
                 ),
-                padding=18,
-                margin=ft.Margin(
-                    left=18,
-                    right=18,
-                    top=12,
-                    bottom=30
+                ft.Container(
+                    content=theme_switch,
+                    padding=14,
+                    margin=ft.Margin(
+                        left=18,
+                        right=18,
+                        bottom=12,
+                    ),
+                    bgcolor=WHITE,
+                    border_radius=18,
+                    border=ft.Border.all(
+                        1,
+                        LIGHT_GREY,
+                    ),
                 ),
-                bgcolor=WHITE,
-                border_radius=18,
-                border=ft.Border.all(
-                    1,
-                    LIGHT_GREY
-                )
-            )
-        ])
+                ft.Container(
+                    content=premium_card,
+                    padding=18,
+                ),
+                ft.Container(
+                    content=ft.Column(
+                        controls=[
+                            ft.Text(
+                                "Storage",
+                                size=18,
+                                weight=ft.FontWeight.BOLD,
+                                color=TEXT,
+                            ),
+                            ft.Text(
+                                f"{len(tasks)} tasks • "
+                                f"{len(notes)} notes",
+                                color=GREY,
+                                weight=ft.FontWeight.W_500,
+                            ),
+                            ft.Button(
+                                content=ft.Text(
+                                    "Clear All Data",
+                                    weight=ft.FontWeight.BOLD,
+                                ),
+                                icon=ft.Icons.DELETE_FOREVER,
+                                bgcolor=RED,
+                                color=WHITE,
+                                on_click=clear_all,
+                            ),
+                        ],
+                        spacing=8,
+                    ),
+                    padding=18,
+                    margin=ft.Margin(
+                        left=18,
+                        right=18,
+                        top=12,
+                        bottom=30,
+                    ),
+                    bgcolor=WHITE,
+                    border_radius=18,
+                    border=ft.Border.all(
+                        1,
+                        LIGHT_GREY,
+                    ),
+                ),
+            ]
+        )
 
+        page.bgcolor = BACKGROUND
         page.update()
 
     def show_premium():
@@ -2034,7 +2180,8 @@ def parse_picker_date(value):
             modal=True,
             title=ft.Text(
                 "⭐ Notebook Premium",
-                weight=ft.FontWeight.BOLD
+                weight=ft.FontWeight.BOLD,
+                color=TEXT,
             ),
             content=ft.Column(
                 controls=[
@@ -2042,29 +2189,35 @@ def parse_picker_date(value):
                         "₦500 / month",
                         size=25,
                         weight=ft.FontWeight.BOLD,
-                        color=BLUE
+                        color=BLUE,
                     ),
                     ft.Text(
                         "Premium payment will be connected later.",
-                        weight=ft.FontWeight.W_500
+                        weight=ft.FontWeight.W_500,
+                        color=TEXT,
                     ),
                     ft.Text(
                         "For now, Premium remains a preview.",
-                        weight=ft.FontWeight.W_500
-                    )
+                        weight=ft.FontWeight.W_500,
+                        color=TEXT,
+                    ),
                 ],
                 tight=True,
-                spacing=10
+                spacing=10,
             ),
             actions=[
                 ft.TextButton(
                     "Close",
                     on_click=lambda e: (
-                        setattr(dialog, "open", False),
-                        page.update()
-                    )
+                        setattr(
+                            dialog,
+                            "open",
+                            False,
+                        ),
+                        page.update(),
+                    ),
                 )
-            ]
+            ],
         )
 
         page.show_dialog(dialog)
@@ -2090,29 +2243,29 @@ def parse_picker_date(value):
             ft.NavigationBarDestination(
                 icon=ft.Icons.HOME_OUTLINED,
                 selected_icon=ft.Icons.HOME,
-                label="Home"
+                label="Home",
             ),
             ft.NavigationBarDestination(
                 icon=ft.Icons.CHECK_BOX_OUTLINED,
                 selected_icon=ft.Icons.CHECK_BOX,
-                label="Tasks"
+                label="Tasks",
             ),
             ft.NavigationBarDestination(
                 icon=ft.Icons.BOOK_OUTLINED,
                 selected_icon=ft.Icons.BOOK,
-                label="Notes"
+                label="Notes",
             ),
             ft.NavigationBarDestination(
                 icon=ft.Icons.SEARCH,
                 selected_icon=ft.Icons.SEARCH,
-                label="Search"
+                label="Search",
             ),
             ft.NavigationBarDestination(
                 icon=ft.Icons.SETTINGS_OUTLINED,
                 selected_icon=ft.Icons.SETTINGS,
-                label="Settings"
-            )
-        ]
+                label="Settings",
+            ),
+        ],
     )
 
     load_data()
@@ -2120,9 +2273,9 @@ def parse_picker_date(value):
     page.add(
         ft.SafeArea(
             content=content,
-            expand=True
+            expand=True,
         ),
-        navigation
+        navigation,
     )
 
     if not user_name:
@@ -2132,5 +2285,4 @@ def parse_picker_date(value):
         show_home()
 
 
-ft.run(main)                                                
-            
+ft.run(main)
