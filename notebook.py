@@ -3,7 +3,7 @@ import json
 import os  
 from datetime import datetime, timedelta  
   
-from flet\_android\_notifications import FletAndroidNotifications  
+from flet_android_notifications import FletAndroidNotifications  
   
 def main(page: ft.Page):  
     page.title = "My Notebook"  
