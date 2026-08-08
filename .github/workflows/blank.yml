@@ -130,9 +130,7 @@ jobs:
             -maxdepth 4 \
             -type f 2>/dev/null | sort | head -200 || true
 
-      - name: Upload APK
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: notebook-apk
-          path: build/apk/*.apk
+      - name: Build APK
+        run: |
+          cd build/flutter
+          /home/runner/flutter/3.44.8/bin/flutter build apk \
