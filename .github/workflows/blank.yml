@@ -27,24 +27,27 @@ jobs:
           python -m pip install flet-android-notifications==0.10.0
           python -m pip install certifi
 
-      - name: Build Android project
+      - name: Generate Flutter project
         run: |
           flet build apk \
             --module-name notebook.py \
             --yes \
-            --verbose
+            --verbose \
+            || true
 
       - name: Patch Android notifications
         run: |
           flet-android-notifications-patch \
             --project-root build/flutter
 
-      - name: Rebuild APK after notification patch
+      - name: Build APK
         run: |
           export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
           cd build/flutter
           flutter pub get
-          flutter build apk --release
+          flutter build apk \
+            --release \
+            --target-platform android-arm64,android-x64,android-arm
 
       - name: Show Gradle logs if build fails
         if: failure()
