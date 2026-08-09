@@ -32,8 +32,7 @@ jobs:
           flet build apk \
             --module-name notebook.py \
             --yes \
-            --verbose \
-            || true
+            --verbose
 
       - name: Patch Android notifications
         run: |
