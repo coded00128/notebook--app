@@ -27,23 +27,34 @@ jobs:
           python -m pip install flet-android-notifications==0.10.0
           python -m pip install certifi
 
+      - name: Clean old Flet build files
+        run: |
+          flet clean
+
       - name: Generate Flutter project
         run: |
           flet build apk \
             --module-name notebook.py \
             --yes \
-            --verbose
+            --verbose \
+            || true
+
+      - name: Check Flutter project was generated
+        run: |
+          test -d build/flutter
+          test -f build/flutter/android/app/src/main/AndroidManifest.xml
+          echo "✅ Flutter project generated successfully."
 
       - name: Patch Android notifications
         run: |
           flet-android-notifications-patch \
             --project-root build/flutter
 
-      - name: Verify notification receiver was patched
+      - name: Verify notification patch
         run: |
           MANIFEST="build/flutter/android/app/src/main/AndroidManifest.xml"
 
-          echo "===== CHECKING NOTIFICATION RECEIVER ====="
+          echo "===== CHECKING NOTIFICATION RECEIVERS ====="
 
           test -f "$MANIFEST"
 
@@ -55,37 +66,46 @@ jobs:
             "com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" \
             "$MANIFEST"
 
+          grep -q \
+            "com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" \
+            "$MANIFEST"
+
           echo "✅ Scheduled notification receivers are present."
 
-      - name: Build APK
+          echo "===== CHECKING DESUGARING ====="
+
+          grep -Rqi \
+            "coreLibraryDesugaring" \
+            build/flutter/android/app \
+            || {
+              echo "❌ Core library desugaring was NOT added."
+              exit 1
+            }
+
+          echo "✅ Core library desugaring configuration found."
+
+      - name: Build final APK
         run: |
-          export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
+          flet build apk \
+            --module-name notebook.py \
+            --yes \
+            --verbose
 
-          export SERIOUS_PYTHON_SITE_PACKAGES="$GITHUB_WORKSPACE/build/site-packages"
-          export SERIOUS_PYTHON_APP="$GITHUB_WORKSPACE/build/flutter"
-
-          cd build/flutter
-
-          flutter pub get
-
-          flutter build apk \
-            --release \
-            --target-platform android-arm64,android-x64,android-arm
-
-      - name: Find APK
-        if: success()
+      - name: Check APK
         run: |
           echo "===== APK FILES ====="
 
-          find build/flutter/build/app/outputs/apk \
+          find build/apk \
             -type f \
             -name "*.apk" \
             -print
 
+          test -n "$(find build/apk -type f -name '*.apk' -print -quit)"
+
+          echo "✅ APK successfully created."
+
       - name: Upload APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: notebook-apk
-          path: |
-            build/flutter/build/app/outputs/apk/release/*.apk
+          path: build/apk/*.apk
