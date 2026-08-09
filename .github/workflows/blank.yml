@@ -27,31 +27,47 @@ jobs:
           python -m pip install flet-android-notifications==0.10.0
           python -m pip install certifi
 
-      - name: Generate Flutter Android project
+      - name: Generate Flutter project
         run: |
           flet build apk \
             --module-name notebook.py \
             --yes \
-            --verbose \
-            || true
+            --verbose
 
       - name: Patch Android notifications
         run: |
           flet-android-notifications-patch \
             --project-root build/flutter
 
-      - name: Build patched APK
+      - name: Verify notification receiver was patched
         run: |
-          export SERIOUS_PYTHON_SITE_PACKAGES="$PWD/build/site-packages"
+          MANIFEST="build/flutter/android/app/src/main/AndroidManifest.xml"
+
+          echo "===== CHECKING NOTIFICATION RECEIVER ====="
+
+          test -f "$MANIFEST"
+
+          grep -q \
+            "com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" \
+            "$MANIFEST"
+
+          grep -q \
+            "com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" \
+            "$MANIFEST"
+
+          echo "✅ Scheduled notification receivers are present."
+
+      - name: Build APK
+        run: |
           export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
 
-          mkdir -p "$SERIOUS_PYTHON_SITE_PACKAGES"
+          export SERIOUS_PYTHON_SITE_PACKAGES="$GITHUB_WORKSPACE/build/site-packages"
+          export SERIOUS_PYTHON_APP="$GITHUB_WORKSPACE/build/flutter"
 
           cd build/flutter
 
           flutter pub get
 
-          SERIOUS_PYTHON_SITE_PACKAGES="$GITHUB_WORKSPACE/build/site-packages" \
           flutter build apk \
             --release \
             --target-platform android-arm64,android-x64,android-arm
@@ -60,8 +76,11 @@ jobs:
         if: success()
         run: |
           echo "===== APK FILES ====="
+
           find build/flutter/build/app/outputs/apk \
-            -type f -name "*.apk" -print
+            -type f \
+            -name "*.apk" \
+            -print
 
       - name: Upload APK
         if: success()
