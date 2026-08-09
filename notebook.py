@@ -684,21 +684,17 @@ def main(page: ft.Page):
                 return
 
             try:
-                notification_allowed = ( await notifications.request_permissions())
-                print("NOTIFICATION PERMISSION:", notification_allowed,)
+                await notifications.request_permissions()
             except Exception as error:
-                print("NOTIFICATION PERMISSION error:", error,)
-                notification_allowed = False
-            if not notification_allowed:
-                show_message("please allow My Notebook notifications in Android Settings.")
-                return
+                print(
+                    "Notification permission error:",
+                    error,
+                )
+
             try:
                 exact_allowed = (
-                    await notifications.can_schedule_exact_notifications()
+                    await notifications.request_exact_alarm_permission()
                 )
-                if not exact_allowed:
-                    
-                    exact_allowed = ( await notifications.request_exact_alarm_permission())
             except Exception as error:
                 print(
                     "Exact alarm permission error:",
@@ -993,11 +989,7 @@ def main(page: ft.Page):
                     update_reminder_label()
 
             picker = ft.TimePicker(
-                value=(
-                    reminder_data["datetime"].time() 
-                             if reminder_data["datetime"]
-                                        else datetime.now().time()),
-
+                value=reminder_data["datetime"].time(),
                 on_change=changed,
             )
 
