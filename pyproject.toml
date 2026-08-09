@@ -11,7 +11,7 @@ dependencies = [
 [tool.flet]
 product = "My Notebook"
 org = "com.mynotebook"
-build_number = 1
+build_number = 2
 
 [tool.flet.android.permission]
 "android.permission.POST_NOTIFICATIONS" = true
