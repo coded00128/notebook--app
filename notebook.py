@@ -685,7 +685,7 @@ def main(page: ft.Page):
 
             try:
                 notification_allowed = ( await notifications.request_permissions())
-                print("NOTIFICATION PERMISSION:", notification allowed,)
+                print("NOTIFICATION PERMISSION:", notification_allowed,)
             except Exception as error:
                 print("NOTIFICATION PERMISSION error:", error,)
                 notification_allowed = False
