@@ -40,27 +40,21 @@ jobs:
           flet-android-notifications-patch \
             --project-root build/flutter
 
-      - name: Build patched Android APK
+      - name: Build patched APK
         run: |
+          export SERIOUS_PYTHON_SITE_PACKAGES="$PWD/build/site-packages"
           export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
+
+          mkdir -p "$SERIOUS_PYTHON_SITE_PACKAGES"
+
           cd build/flutter
 
           flutter pub get
 
+          SERIOUS_PYTHON_SITE_PACKAGES="$GITHUB_WORKSPACE/build/site-packages" \
           flutter build apk \
             --release \
             --target-platform android-arm64,android-x64,android-arm
-
-      - name: Show build files if build fails
-        if: failure()
-        run: |
-          echo "===== FLUTTER DIRECTORY ====="
-          find build/flutter -maxdepth 3 -type f \
-            2>/dev/null | head -200 || true
-
-          echo "===== GRADLE LOGS ====="
-          find build/flutter -type f \( -name "*.log" -o -name "*.txt" \) \
-            -print -exec tail -n 200 {} \; 2>/dev/null || true
 
       - name: Find APK
         if: success()
