@@ -32,25 +32,42 @@ jobs:
           flet build apk \
             --module-name notebook.py \
             --yes \
-            --verbose
+            --verbose \
+            || true
 
       - name: Patch Android notifications
         run: |
           flet-android-notifications-patch \
             --project-root build/flutter
 
-      - name: Build patched APK
+      - name: Build patched Android APK
         run: |
-          flet build apk \
-            --module-name notebook.py \
-            --yes \
-            --verbose
+          export PATH="/home/runner/flutter/3.44.8/bin:$PATH"
+          cd build/flutter
+
+          flutter pub get
+
+          flutter build apk \
+            --release \
+            --target-platform android-arm64,android-x64,android-arm
+
+      - name: Show build files if build fails
+        if: failure()
+        run: |
+          echo "===== FLUTTER DIRECTORY ====="
+          find build/flutter -maxdepth 3 -type f \
+            2>/dev/null | head -200 || true
+
+          echo "===== GRADLE LOGS ====="
+          find build/flutter -type f \( -name "*.log" -o -name "*.txt" \) \
+            -print -exec tail -n 200 {} \; 2>/dev/null || true
 
       - name: Find APK
         if: success()
         run: |
           echo "===== APK FILES ====="
-          find build -type f -name "*.apk" -print
+          find build/flutter/build/app/outputs/apk \
+            -type f -name "*.apk" -print
 
       - name: Upload APK
         if: success()
@@ -58,5 +75,4 @@ jobs:
         with:
           name: notebook-apk
           path: |
-            build/apk/*.apk
             build/flutter/build/app/outputs/apk/release/*.apk
