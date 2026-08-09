@@ -694,10 +694,11 @@ def main(page: ft.Page):
                 return
             try:
                 exact_allowed = (
-                    await notifications.can_shedule_exact_notifications()
+                    await notifications.can_schedule_exact_notifications()
                 )
                 if not exact_allowed:
-                     exact_allowed = ( await notifications.request_exact_alarm_permission())
+                    
+                    exact_allowed = ( await notifications.request_exact_alarm_permission())
             except Exception as error:
                 print(
                     "Exact alarm permission error:",
