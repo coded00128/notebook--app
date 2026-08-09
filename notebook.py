@@ -17,6 +17,9 @@ def main(page: ft.Page):
     tasks = []
     notes = []
     user_name = ""
+    dark_mode = False
+
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     notifications = FletAndroidNotifications()
 
@@ -91,7 +94,7 @@ def main(page: ft.Page):
     # ============================================================
 
     def load_data():
-        nonlocal tasks, notes, user_name
+        nonlocal tasks, notes, user_name, dark_mode
 
         if not os.path.exists(data_file):
             return
@@ -103,6 +106,11 @@ def main(page: ft.Page):
             tasks = data.get("tasks", [])
             notes = data.get("notes", [])
             user_name = data.get("user_name", "")
+            dark_mode = data.get("dark_mode", False)
+            if dark_mode:
+                apply_dark_theme()
+            else:
+                apply_light_theme()
 
         except Exception:
             tasks = []
@@ -117,6 +125,7 @@ def main(page: ft.Page):
                         "user_name": user_name,
                         "tasks": tasks,
                         "notes": notes,
+                        "dark_mode": dark_mode,
                     },
                     file,
                     indent=4,
@@ -888,24 +897,11 @@ def main(page: ft.Page):
         now = datetime.now()
 
         reminder_data = {
-            "datetime": datetime(
-                now.year,
-                now.month,
-                now.day,
-                now.hour,
-                now.minute,
-            )
+            "datetime": None
         }
 
         reminder_label = ft.Text(
-            "🔔 "
-            + reminder_data["datetime"].strftime(
-                "%d %b %Y • %I:%M %p"
-            ),
-            size=13,
-            weight=ft.FontWeight.W_500,
-            color=GREY,
-        )
+            "No reminder set", size=13, weight=ft.FontWeight.W_500, color=GREY,)
 
         def update_reminder_label():
             selected = reminder_data["datetime"]
@@ -2078,10 +2074,15 @@ def main(page: ft.Page):
         )
 
         def change_theme(e):
+            nonlocal dark_mode
+
             if theme_switch.value:
+                dark_mode = True
                 apply_dark_theme()
             else:
+                dark_mode = False
                 apply_light_theme()
+            save_data()
 
             # Rebuild the CURRENT screen using the new palette.
             # This is what stops old text/card colors from remaining
