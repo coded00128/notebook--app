@@ -923,7 +923,7 @@ def main(page: ft.Page):
             def changed(ev):
                 picker = ev.control
 
-                selected_date = get_picker_date(picker)
+                selected_date = (picker.value.astimezone().date() if picker.value else None)
 
                 if selected_date:
                     current = reminder_data["datetime"]
