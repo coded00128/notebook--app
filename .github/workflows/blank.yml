@@ -27,7 +27,7 @@ jobs:
           python -m pip install flet-android-notifications==0.10.0
           python -m pip install certifi
 
-      - name: First Flet build
+      - name: Generate Flutter Android project
         run: |
           flet build apk \
             --module-name notebook.py \
@@ -40,7 +40,7 @@ jobs:
           flet-android-notifications-patch \
             --project-root build/flutter
 
-      - name: Final Flet APK build
+      - name: Build patched APK
         run: |
           flet build apk \
             --module-name notebook.py \
