@@ -684,17 +684,20 @@ def main(page: ft.Page):
                 return
 
             try:
-                await notifications.request_permissions()
+                notification_allowed = ( await notifications.request_permissions())
+                print("NOTIFICATION PERMISSION:", notification allowed,)
             except Exception as error:
-                print(
-                    "Notification permission error:",
-                    error,
-                )
-
-            try:
+                print("NOTIFICATION PERMISSION error:", error,)
+                notification_allowed = False
+            if not notification_allowed:
+                show_message("please allow My Notebook notifications in Android Settings.")
+                return
+             try:
                 exact_allowed = (
-                    await notifications.request_exact_alarm_permission()
+                    await notifications.can_shedule_exact_notification()
                 )
+                 if not exact_allowed:
+                     exact_allowed = ( await notifications.request_exact_alarm_permission())
             except Exception as error:
                 print(
                     "Exact alarm permission error:",
