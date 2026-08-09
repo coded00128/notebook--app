@@ -692,7 +692,7 @@ def main(page: ft.Page):
             if not notification_allowed:
                 show_message("please allow My Notebook notifications in Android Settings.")
                 return
-             try:
+            try:
                 exact_allowed = (
                     await notifications.can_shedule_exact_notification()
                 )
