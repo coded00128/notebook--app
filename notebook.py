@@ -993,7 +993,11 @@ def main(page: ft.Page):
                     update_reminder_label()
 
             picker = ft.TimePicker(
-                value=reminder_data["datetime"].time(),
+                value=(
+                    reminder_data["datetime"].time() 
+                             if reminder_data["datetime"]
+                                        else datetime.now().time()),
+
                 on_change=changed,
             )
 
