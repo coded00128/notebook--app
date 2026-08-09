@@ -694,9 +694,9 @@ def main(page: ft.Page):
                 return
             try:
                 exact_allowed = (
-                    await notifications.can_shedule_exact_notification()
+                    await notifications.can_shedule_exact_notifications()
                 )
-                 if not exact_allowed:
+                if not exact_allowed:
                      exact_allowed = ( await notifications.request_exact_alarm_permission())
             except Exception as error:
                 print(
