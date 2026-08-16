@@ -989,7 +989,8 @@ def main(page: ft.Page):
                     update_reminder_label()
 
             picker = ft.TimePicker(
-                value=reminder_data["datetime"].time(),
+                value=reminder_data["datetime"].time() if reminder_data ["datetime"]
+                else None,
                 on_change=changed,
             )
 
